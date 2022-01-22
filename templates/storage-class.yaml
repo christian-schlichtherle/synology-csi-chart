@@ -1,0 +1,19 @@
+{{- range $name, $value := $.Values.storageClasses }}
+---
+{{- with $value | default (dict "isDefault" false) }}
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  name: {{ printf "%s-%s" (include "synology-csi.fullname" $) $name }}
+  annotations:
+    storageclass.kubernetes.io/is-default-class: {{ default "false" .isDefault | quote }}
+{{- if $.Release.IsInstall }}
+parameters: {{- default (dict "fsType" "ext4") .parameters | toYaml | nindent 2 }}
+{{- end }}
+provisioner: csi.san.synology.com
+reclaimPolicy: {{ default "Delete" .reclaimPolicy }}
+volumeBindingMode: {{ default "Immediate" .volumeBindingMode }}
+{{- end }}
+{{- end }}

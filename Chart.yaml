@@ -1,6 +1,6 @@
 apiVersion: v2
 appVersion: "1.0.0"
-description: A Helm chart for installing the Synology CSI Driver for Kubernetes.
+description: Installs the Synology CSI Driver.
 home: https://github.com/christian-schlichtherle/synology-csi-chart
 keywords:
   - Synology
@@ -9,4 +9,7 @@ maintainers:
   - name: Christian Schlichtherle
     url: https://github.com/christian-schlichtherle
 name: synology-csi
+sources:
+  - https://github.com/christian-schlichtherle/synology-csi-chart/tree/main
+  - https://github.com/SynologyOpenSource/synology-csi/tree/main
 version: 0.1.0-SNAPSHOT

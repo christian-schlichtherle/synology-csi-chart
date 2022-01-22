@@ -4,7 +4,10 @@ Your release is named {{ .Release.Name }}.
 
 To learn more about the release, try:
 
-  $ helm status {{ .Release.Name }}
-  $ helm get all {{ .Release.Name }}
+    helm status {{ .Release.Name }} --namespace {{ .Release.Namespace }}
 
-If you want to help improve this chart, please submit an issue or send a pull request to {{ .Chart.Home }}.
+or
+
+    helm get all {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+If you want to help to improve this chart, please submit an issue or send a pull request to {{ .Chart.Home }}.

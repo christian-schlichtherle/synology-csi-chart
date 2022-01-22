@@ -1,7 +1,70 @@
+---
 nameOverride: ""
 fullnameOverride: ""
-serviceAccount:
-  annotations: {}
-  create: false
-  # If empty and create is true, a name is generated using the fullname template:
-  name: ""
+
+# How to connect to your Synology Diskstation?
+connections:
+  - host: 192.168.1.1   # the IP address or domain of the Diskstation
+    port: 5000          # the port for connecting to the Diskstation Manager
+    https: false        # whether the port expects HTTPS or not
+    username: username
+    password: password
+  - host: 192.168.1.1
+    port: 5001
+    https: false
+    username: username
+    password: password
+
+images:
+  attacher:
+    image: k8s.gcr.io/sig-storage/csi-attacher
+    imagePullPolicy: IfNotPresent
+    tag: v3.3.0
+  nodeDriverRegistrar:
+    image: k8s.gcr.io/sig-storage/csi-node-driver-registrar
+    imagePullPolicy: IfNotPresent
+    tag: v2.3.0
+  provisioner:
+    image: k8s.gcr.io/sig-storage/csi-provisioner
+    imagePullPolicy: IfNotPresent
+    tag: v3.0.0
+  resizer:
+    image: k8s.gcr.io/sig-storage/csi-resizer
+    imagePullPolicy: IfNotPresent
+    tag: v1.3.0
+  snapshotter:
+    image: k8s.gcr.io/sig-storage/csi-snapshotter
+    imagePullPolicy: IfNotPresent
+    tag: v4.2.1
+
+storageClasses:
+  delete:
+    ## One of true or false (default):
+    #isDefault: false
+    ## One of "Retain" or "Delete" (default):
+    reclaimPolicy: Delete
+    ## One of "WaitForFirstConsumer" or "Immediate" (default):
+    #volumeBindingMode: Immediate
+
+    ## If not present, some location will be chosen to create volumes with the filesystem type ext4.
+    ## Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
+    #parameters:
+    #  dsm: "1.1.1.1"
+    #  fsType: ext4
+    #  location: /volume1
+  retain:
+    reclaimPolicy: Retain
+
+volumeSnapshotClasses:
+  delete: { }
+    ## One of "Retain" or "Delete" (default):
+    #deletionPolicy: Delete
+    ## One of true or false (default):
+    #isDefault: false
+
+    ## Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
+    #parameters:
+    #  description: "Kubernetes CSI"
+    #  is_locked: "false"
+  retain:
+    deletionPolicy: Retain

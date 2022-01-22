@@ -4,16 +4,21 @@ RELEASE ?= $(NAMESPACE)
 HELM_NAMESPACE ?= $(NAMESPACE)
 HELM_RELEASE ?= $(RELEASE)
 
-.PHONY: up
-up:
-	helm upgrade $(HELM_RELEASE) . \
-		--create-namespace \
-		--install \
-		--namespace $(HELM_NAMESPACE) \
-		$(HELM_OPTS)
+.PHONY: up upgrade
+up upgrade:
+	helm upgrade $(HELM_RELEASE) . --create-namespace --install --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
 
-.PHONY: down
-down:
-	helm uninstall $(HELM_RELEASE) \
-		--namespace $(HELM_NAMESPACE) \
-		$(HELM_OPTS)
+.PHONY: render template
+render template:
+	helm template $(HELM_RELEASE) . --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+
+.PHONY: test
+test:
+	helm test $(HELM_RELEASE) --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+	kubectl delete pod $(HELM_RELEASE)-test --namespace $(HELM_NAMESPACE)
+	kubectl delete pvc $(HELM_RELEASE)-test --namespace $(HELM_NAMESPACE)
+
+
+.PHONY: down uninstall
+down uninstall:
+	helm uninstall $(HELM_RELEASE) --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
