@@ -3,18 +3,14 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  labels:
-    source: snapshotter.yaml
-    {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-snapshotter
 
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  labels:
-    source: snapshotter.yaml
-    {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-snapshotter
 rules:
   - apiGroups: [ "" ]
@@ -34,9 +30,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  labels:
-    source: snapshotter.yaml
-    {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-snapshotter
 subjects:
   - kind: ServiceAccount
@@ -54,21 +48,18 @@ apiVersion: apps/v1
 metadata:
   labels:
     app: snapshotter
-    source: snapshotter.yaml
     {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-snapshotter
 spec:
   selector:
     matchLabels:
       app: snapshotter
-      source: snapshotter.yaml
       {{- include "synology-csi.selectorLabels" $ | nindent 6 }}
   serviceName: {{ include "synology-csi.fullname" $ }}-snapshotter
   template:
     metadata:
       labels:
         app: snapshotter
-        source: snapshotter.yaml
         {{- include "synology-csi.selectorLabels" $ | nindent 8 }}
     spec:
       containers:

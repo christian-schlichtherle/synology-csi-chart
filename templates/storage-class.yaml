@@ -5,12 +5,10 @@ allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  labels:
-    source: storage-class.yaml
-    {{- include "synology-csi.labels" $ | nindent 4 }}
-  name: {{ printf "%s-%s" (include "synology-csi.fullname" $) $name }}
   annotations:
     storageclass.kubernetes.io/is-default-class: {{ default "false" .isDefault | quote }}
+  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  name: {{ printf "%s-%s" (include "synology-csi.fullname" $) $name }}
 parameters: {{- default (dict "fsType" "ext4") .parameters | toYaml | nindent 2 }}
 provisioner: csi.san.synology.com
 reclaimPolicy: {{ default "Delete" .reclaimPolicy }}
