@@ -11,9 +11,7 @@ metadata:
   name: {{ printf "%s-%s" (include "synology-csi.fullname" $) $name }}
   annotations:
     storageclass.kubernetes.io/is-default-class: {{ default "false" .isDefault | quote }}
-{{- if $.Release.IsInstall }}
 parameters: {{- default (dict "fsType" "ext4") .parameters | toYaml | nindent 2 }}
-{{- end }}
 provisioner: csi.san.synology.com
 reclaimPolicy: {{ default "Delete" .reclaimPolicy }}
 volumeBindingMode: {{ default "Immediate" .volumeBindingMode }}
