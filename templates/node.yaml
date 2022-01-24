@@ -48,7 +48,9 @@ roleRef:
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels:
+    app: node
+    {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-node
 spec:
   selector:

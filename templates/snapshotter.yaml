@@ -46,7 +46,9 @@ roleRef:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels:
+    app: snapshotter
+    {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-snapshotter
 spec:
   selector:
