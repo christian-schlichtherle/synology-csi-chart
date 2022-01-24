@@ -7,7 +7,9 @@ deletionPolicy: {{ default "Delete" .deletionPolicy }}
 driver: csi.san.synology.com
 kind: VolumeSnapshotClass
 metadata:
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels:
+    source: volume-snapshot-class.yaml
+    {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ printf "%s-%s" (include "synology-csi.fullname" $) $name }}
   annotations:
     storageclass.kubernetes.io/is-default-class: {{ default "false" .isDefault | quote }}

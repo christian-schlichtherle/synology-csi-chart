@@ -2,14 +2,18 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels:
+    source: node.yaml
+    {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-node
 
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels:
+    source: node.yaml
+    {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-node
 rules:
   - apiGroups: [ "" ]
@@ -32,7 +36,9 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels:
+    source: node.yaml
+    {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-node
 subjects:
   - kind: ServiceAccount
@@ -50,17 +56,20 @@ apiVersion: apps/v1
 metadata:
   labels:
     app: node
+    source: node.yaml
     {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-node
 spec:
   selector:
     matchLabels:
       app: node
+      source: node.yaml
       {{- include "synology-csi.selectorLabels" $ | nindent 6 }}
   template:
     metadata:
       labels:
         app: node
+        source: node.yaml
         {{- include "synology-csi.selectorLabels" $ | nindent 8 }}
     spec:
       containers:

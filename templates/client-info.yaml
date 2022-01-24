@@ -4,5 +4,7 @@ data:
   client-info.yaml: |- {{- dict "clients" $.Values.connections | toYaml | b64enc | nindent 4 }}
 kind: Secret
 metadata:
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
+  labels:
+    source: client-info.yaml
+    {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-client-info
