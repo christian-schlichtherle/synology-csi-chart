@@ -55,11 +55,11 @@ However, for convenience we recommend using the provided `Makefile` and run:
 The Synology CSI Driver is now ready to use.
 You can monitor the SAN Manager application on your Synology Diskstation while running the following tests.
 
-#### Automated Test
+#### Automated Testing
 
     $ make test
 
-#### Manual Test
+#### Manual Testing
 
 Setup:
 
