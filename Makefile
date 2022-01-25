@@ -15,9 +15,6 @@ render template:
 .PHONY: test
 test:
 	helm test $(HELM_RELEASE) --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
-	kubectl delete pod $(HELM_RELEASE)-test --namespace $(HELM_NAMESPACE)
-	kubectl delete pvc $(HELM_RELEASE)-test --namespace $(HELM_NAMESPACE)
-
 
 .PHONY: down uninstall
 down uninstall:

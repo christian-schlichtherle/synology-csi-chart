@@ -59,34 +59,71 @@ You can monitor the SAN Manager application on your Synology Diskstation while r
 
     $ make test
 
-#### Manual Testing
+This will create a `PersistentVolumeClaim` (PVC) and a `Job` to mount the associated `PersistentVolume` (PV) and write a
+file to its filesystem.
+If this succeeds, all resources get automatically removed.
 
-Setup:
+### Troubleshooting
 
-    $ kubectl apply -f test.yaml
+First, make sure to run the automated test.
+This may hang if the PVC cannot be bound for some reason, for example if you forgot to edit the credentials for
+accessing the Diskstation Manager application.
+In other cases it may fail with an error message but then the resources do not get deleted so that you can troubleshoot
+the issue.
 
-Test:
+For example, let's assume this chart has been installed using `make` and thus its namespace is `synology-csi`:
 
-    $ kubectl exec iscsi-test -it -- /bin/sh
-    # echo 'Hello world!' > /data/file
-    # cat /data/file
-    Hello world!
-    # ls -l /data/file
-    -rw-r--r-- 1 root root 13 Jan 24 11:25 /data/file
-    # df -h /data
-    Filesystem      Size  Used Avail Use% Mounted on
-    /dev/sda        974M   28K  958M   1% /data
-    # lsblk
-    NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-    sda           8:0    0    1G  0 disk /data
-    mmcblk0     179:0    0 59.5G  0 disk
-    |-mmcblk0p1 179:1    0  256M  0 part
-    `-mmcblk0p2 179:2    0 59.2G  0 part /etc/resolv.conf
-    # exit
+```
+$ NAMESPACE=synology-csi
+```
 
-Teardown:
+Now let's look at the pod for the test job:
 
-    $ kubectl delete -f test.yaml
+```
+$ kubectl describe pods -n $NAMESPACE -l helm.sh/template=test.yaml
+[...]
+Volumes:
+  data:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  synology-csi-test
+    ReadOnly:   false
+[...]
+Events:
+  Type     Reason            Age                 From               Message
+  ----     ------            ----                ----               -------
+  Warning  FailedScheduling  3m6s                default-scheduler  0/4 nodes are available: 4 pod has unbound immediate PersistentVolumeClaims.
+  Warning  FailedScheduling  61s (x1 over 2m1s)  default-scheduler  0/4 nodes are available: 4 pod has unbound immediate PersistentVolumeClaims.
+```
+
+The test PVC isn't bound.
+Let's examine why:
+
+```
+$ kubectl describe pvc -n $NAMESPACE -l helm.sh/template=test.yaml
+[...]
+Events:
+  Type     Reason                Age                     From                                                                  Message
+  ----     ------                ----                    ----                                                                  -------
+  Normal   Provisioning          4m2s (x9 over 8m17s)    csi.san.synology.com_kolossus-3_c3a0b188-fa91-409b-a4d1-0316d5ffbbd6  External provisioner is provisioning volume for claim "synology-csi/synology-csi-test"
+  Warning  ProvisioningFailed    4m2s (x9 over 8m17s)    csi.san.synology.com_kolossus-3_c3a0b188-fa91-409b-a4d1-0316d5ffbbd6  failed to provision volume with StorageClass "synology-csi-delete": rpc error: code = Internal desc = Couldn't find any host available to create Volume
+  Normal   ExternalProvisioning  2m25s (x26 over 8m17s)  persistentvolume-controller                                           waiting for a volume to be created, either by external provisioner "csi.san.synology.com" or manually created by system administrator
+```
+
+The events mention a provisioner which is running in a container named `plugin` in a controller pod which has been
+deployed as part of this chart.
+Let's examine the logs of this plugin container:
+
+```
+$ kubectl logs -n $NAMESPACE -l helm.sh/template=controller.yaml -c plugin
+[...]
+2022-01-25T08:19:57Z [INFO] [driver/utils.go:104] GRPC call: /csi.v1.Controller/CreateVolume
+2022-01-25T08:19:57Z [INFO] [driver/utils.go:105] GRPC request: {"capacity_range":{"required_bytes":1073741824},"name":"pvc-a3d7962b-0ab5-4184-b545-a44cc424aaf1","parameters":{"fsType":"ext4"},"volume_capabilities":[{"AccessType":{"Mount":{"fs_type":"ext4"}},"access_mode":{"mode":1}}]}
+2022-01-25T08:19:57Z [ERROR] [driver/utils.go:108] GRPC error: rpc error: code = Internal desc = Couldn't find any host available to create Volume
+```
+
+After all, we found out that the plugin isn't able to connect to the Diskstation.
+This is because I didn't edit the `connections` dictionary in the `values.yaml` file.
+After fixing that the test passes as expected.
 
 ### Uninstalling the Chart
 
