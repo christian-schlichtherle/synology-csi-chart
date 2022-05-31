@@ -91,7 +91,7 @@ spec:
           env:
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
-          image: synology/synology-csi:v{{ $.Chart.AppVersion }}
+          image: synology/synology-csi:{{ $.Chart.AppVersion }}
           securityContext:
             allowPrivilegeEscalation: true
             capabilities:

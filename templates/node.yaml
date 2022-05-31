@@ -102,7 +102,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-          image: synology/synology-csi:v{{ $.Chart.AppVersion }}
+          image: synology/synology-csi:{{ $.Chart.AppVersion }}
           securityContext:
             privileged: true
           volumeMounts:
