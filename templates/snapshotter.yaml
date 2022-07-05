@@ -108,7 +108,11 @@ spec:
       volumes:
         - name: client-info
           secret:
+            {{- if $.Values.clientInfoSecretName }}
+            secretName: {{ $.Values.clientInfoSecretName }}
+            {{- else }}
             secretName: {{ include "synology-csi.fullname" $ }}-client-info
+            {{- end }}
         - name: socket-dir
           emptyDir: { }
 {{- end }}

@@ -1,3 +1,4 @@
+{{- if not .Values.clientInfoSecretName }}
 ---
 apiVersion: v1
 data:
@@ -6,3 +7,4 @@ kind: Secret
 metadata:
   labels: {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-client-info
+{{- end }}
