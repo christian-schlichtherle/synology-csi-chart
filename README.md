@@ -35,6 +35,20 @@ Clone this repository and change into its directory.
 Edit the file `values.yaml` and configure it to suit your requirements.
 In particular, edit the section `connections` to match the connection parameters and credentials for accessing your
 Synology Diskstation.
+
+You can also use an existing secret (specify using `clientInfoSecretName`) that contains the `connections` details
+under `client-info.yaml` key:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: foo-synology-csi-client-info
+data:
+  client-info.yaml: |-
+    Y2xpZW50czoKLSBob3N0OiAxOTIuMTY4LjEuMQogIGh0dHBzOiBmYWxzZQogIHBhc3N3b3JkOiBwYXNzd29yZAogIHBvcnQ6IDUwMDAKICB1c2VybmFtZTogdXNlcm5hbWUKLSBob3N0OiAxOTIuMTY4LjEuMQogIGh0dHBzOiBmYWxzZQogIHBhc3N3b3JkOiBwYXNzd29yZAogIHBvcnQ6IDUwMDEKICB1c2VybmFtZTogdXNlcm5hbWU=
+```
+
 It's a good practice to create a dedicated user for accessing the Diskstation Manager (DSM) application.
 Your user needs to be a member of the `administrator` group and have permission to access the `DSM` application.
 You can reject any other permissions.
