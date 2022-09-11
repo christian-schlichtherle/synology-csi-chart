@@ -80,7 +80,7 @@ spec:
               value: /var/lib/kubelet/plugins/csi.san.synology.com/csi.sock
           {{- with .nodeDriverRegistrar }}
           image: {{ .image }}:{{ .tag }}
-          imagePullPolicy: {{ .imagePullPolicy }}
+          imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
             privileged: true
@@ -121,13 +121,7 @@ spec:
       hostNetwork: true
       serviceAccountName: {{ include "synology-csi.fullname" $ }}-node
       volumes:
-        - name: client-info
-          secret:
-            {{- if $.Values.clientInfoSecretName }}
-            secretName: {{ $.Values.clientInfoSecretName }}
-            {{- else }}
-            secretName: {{ include "synology-csi.fullname" $ }}-client-info
-            {{- end }}
+        - {{ include "synology-csi.clientInfoSecretVolume" $ | nindent 10 }}
         - name: device-dir
           hostPath:
             path: /dev

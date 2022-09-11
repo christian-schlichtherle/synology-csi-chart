@@ -1,4 +1,4 @@
-{{- if not .Values.clientInfoSecretName }}
+{{- if not $.Values.clientInfoSecretName }}
 ---
 apiVersion: v1
 data:

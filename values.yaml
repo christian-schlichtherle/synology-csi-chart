@@ -1,44 +1,40 @@
 ---
-nameOverride: ""
-fullnameOverride: ""
-
+clientInfoSecretName: ""
 # How to connect to your Synology Diskstation?
 connections:
   - host: 192.168.1.1   # the IP V4 address of the Diskstation
-    port: 5000          # the port for connecting to the Diskstation Manager application
     https: false        # whether the port expects HTTPS or not
-    username: username
-    password: password
+    password: password  # the password of the dedicated CSI user
+    port: 5000          # the port for connecting to the Diskstation Manager application
+    username: username  # the name of the dedicated CSI user
   - host: 192.168.1.1
-    port: 5001
-    https: false
-    username: username
+    https: true
     password: password
-
-clientInfoSecretName:
-
+    port: 5001
+    username: username
+fullnameOverride: ""
 images:
   attacher:
     image: k8s.gcr.io/sig-storage/csi-attacher
-    imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
     tag: v3.3.0
   nodeDriverRegistrar:
     image: k8s.gcr.io/sig-storage/csi-node-driver-registrar
-    imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
     tag: v2.3.0
   provisioner:
     image: k8s.gcr.io/sig-storage/csi-provisioner
-    imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
     tag: v3.0.0
   resizer:
     image: k8s.gcr.io/sig-storage/csi-resizer
-    imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
     tag: v1.3.0
   snapshotter:
     image: k8s.gcr.io/sig-storage/csi-snapshotter
-    imagePullPolicy: IfNotPresent
+    pullPolicy: IfNotPresent
     tag: v4.2.1
-
+nameOverride: ""
 storageClasses:
   delete:
     ## One of true or false (default):
@@ -56,7 +52,6 @@ storageClasses:
     #  location: /volume1
   retain:
     reclaimPolicy: Retain
-
 volumeSnapshotClasses:
   delete: { }
     ## One of "Retain" or "Delete" (default):

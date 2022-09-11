@@ -93,7 +93,7 @@ spec:
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
           {{- with .provisioner }}
           image: {{ .image }}:{{ .tag }}
-          imagePullPolicy: {{ .imagePullPolicy }}
+          imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
             allowPrivilegeEscalation: true
@@ -112,7 +112,7 @@ spec:
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
           {{- with .attacher }}
           image: {{ .image }}:{{ .tag }}
-          imagePullPolicy: {{ .imagePullPolicy }}
+          imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
             allowPrivilegeEscalation: true
@@ -131,7 +131,7 @@ spec:
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
           {{- with .resizer }}
           image: {{ .image }}:{{ .tag }}
-          imagePullPolicy: {{ .imagePullPolicy }}
+          imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
             allowPrivilegeEscalation: true
@@ -165,13 +165,7 @@ spec:
       hostNetwork: true
       serviceAccountName: {{ include "synology-csi.fullname" $ }}-controller
       volumes:
-        - name: client-info
-          secret:
-            {{- if $.Values.clientInfoSecretName }}
-            secretName: {{ $.Values.clientInfoSecretName }}
-            {{- else }}
-            secretName: {{ include "synology-csi.fullname" $ }}-client-info
-            {{- end }}
+        - {{ include "synology-csi.clientInfoSecretVolume" $ | nindent 10 }}
         - name: socket-dir
           emptyDir: { }
 {{- end }}

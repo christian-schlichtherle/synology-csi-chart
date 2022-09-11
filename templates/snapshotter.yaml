@@ -72,7 +72,7 @@ spec:
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
           {{- with .snapshotter }}
           image: {{ .image }}:{{ .tag }}
-          imagePullPolicy: {{ .imagePullPolicy }}
+          imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
             allowPrivilegeEscalation: true
@@ -106,13 +106,7 @@ spec:
       hostNetwork: true
       serviceAccountName: {{ include "synology-csi.fullname" $ }}-snapshotter
       volumes:
-        - name: client-info
-          secret:
-            {{- if $.Values.clientInfoSecretName }}
-            secretName: {{ $.Values.clientInfoSecretName }}
-            {{- else }}
-            secretName: {{ include "synology-csi.fullname" $ }}-client-info
-            {{- end }}
+        - {{ include "synology-csi.clientInfoSecretVolume" $ | nindent 10 }}
         - name: socket-dir
           emptyDir: { }
 {{- end }}
