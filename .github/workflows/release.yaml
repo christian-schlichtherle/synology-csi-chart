@@ -1,28 +1,30 @@
+# See https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# and https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-static-site-generators-with-nodejs :
 ---
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3 # https://github.com/actions/checkout
         with:
           fetch-depth: 0
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-      - env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        name: Install Helm
+      - name: Install Helm
         uses: azure/setup-helm@v3
-      - env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.5.0
         with:
-          charts_dir: "."
+          version: v3.11.1
+      - name: Package Helm chart
+        run: |
+          set -o errexit -o nounset -o pipefail
+          helm package . --destination dist
+          helm repo index dist --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist
 name: Release Charts
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+    # Publish semver tags as releases:
+    tags: [ 'v*.*.*' ]
