@@ -11,52 +11,68 @@ issues and to benefit from the advanced resource management features of Helm.
 
 + Customizable images, image pull policies and image tags for all CSI containers.
 + Customizable parameters for `StorageClass` and `VolumeSnapshotClass` resources.
++ Customizable `affinity`, `nodeSelector` and `tolerations` properties for the `StatefulSet` and `DaemonSet` workloads.
 + Automatic installation of two storage classes with `reclaimPolicy=Delete` and `reclaimPolicy=Retain`.
 + Automatic installation of a CSI Snapshotter if the `VolumeSnapshotClass` CRD is installed in your cluster.
 
-## TODO
-
-+ Package Helm chart and upload to ArtifactHub.
-
 ## Prerequisites
 
++ [Helm](https://helm.sh) must be installed to use this chart.
+  Please refer to Helm's [documentation](https://helm.sh/docs) to get started.
 + A Synology Diskstation with the SAN Manager package installed (the package name was changed in DSM 7).
-+ A cluster with [Kubernetes](https://kubernetes.io) version 1.19 or later.
++ A cluster with [Kubernetes](https://kubernetes.io) version 1.20 or later.
 + `iscsiadm` installed on every cluster node.
 + `kubectl` installed on your localhost and configured to connect to the cluster.
 + Optional: [CSI Snapshotter](https://github.com/kubernetes-csi/external-snapshotter) installed in the cluster.
 
 ## Usage
 
-Clone this repository and change into its directory.
+Once Helm has been set up correctly, add the repo as follows:
 
-### Editing the Configuration
+    helm repo add synology-csi-chart https://christian-schlichtherle.github.io/synology-csi-chart
 
-Edit the file `values.yaml` and configure it to suit your requirements.
-In particular, edit the section `connections` to match the connection parameters and credentials for accessing your
-Synology Diskstation.
+If you had already added this repo earlier, run `helm repo update` to retrieve the latest versions of the packages.
+You can then run `helm search repo synology-csi-chart` to see the charts.
 
-You can also use an existing secret (specify using `clientInfoSecretName`) that contains the `connections` details
-under `client-info.yaml` key:
+To install the chart:
+
+    helm install <release-name> synology-csi-chart/synology-csi-chart
+
+To uninstall the chart:
+
+    helm delete <release-name>
+
+### Customizing the Configuration
+
+As usual with Helm, you can override the values in the file [`values.yaml`](values.yaml) to suit your requirements - see
+[Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing).
+In particular, override the section `connections` to match the connection parameters and credentials for
+accessing your Synology Diskstation.
+
+You can also use an existing secret (specify using the key `clientInfoSecretName`) that contains the `connections`
+details under `client-info.yaml` key:
 
 ```yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: foo-synology-csi-client-info
+  name: <release-name>-client-info
 data:
   client-info.yaml: |-
     Y2xpZW50czoKLSBob3N0OiAxOTIuMTY4LjEuMQogIGh0dHBzOiBmYWxzZQogIHBhc3N3b3JkOiBwYXNzd29yZAogIHBvcnQ6IDUwMDAKICB1c2VybmFtZTogdXNlcm5hbWUKLSBob3N0OiAxOTIuMTY4LjEuMQogIGh0dHBzOiBmYWxzZQogIHBhc3N3b3JkOiBwYXNzd29yZAogIHBvcnQ6IDUwMDEKICB1c2VybmFtZTogdXNlcm5hbWU=
 ```
 
 It's a good practice to create a dedicated user for accessing the Diskstation Manager (DSM) application.
-Your user needs to be a member of the `administrator` group and have permission to access the `DSM` application.
+Your user needs to be a member of the `administrators` group and have permission to access the `DSM` application.
 You can reject any other permissions.
 
-### Installing the Chart
+## Local Development
 
+### Installing the Chart from Source
+
+Clone this repository and change into its directory.
 You can run `helm install ...` as usual.
-However, for convenience we recommend using the provided `Makefile` and run:
+However, for convenience it's recommended to use the provided `Makefile` and run:
 
     $ make up
 

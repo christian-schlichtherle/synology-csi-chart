@@ -2,7 +2,7 @@
 clientInfoSecretName: ""
 # How to connect to your Synology Diskstation?
 connections:
-  - host: 192.168.1.1   # the IP V4 address of the Diskstation
+  - host: 192.168.1.1   # the IP address of the Diskstation
     https: false        # whether the port expects HTTPS or not
     password: password  # the password of the dedicated CSI user
     port: 5000          # the port for connecting to the Diskstation Manager application
