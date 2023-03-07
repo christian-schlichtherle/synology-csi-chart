@@ -150,7 +150,10 @@ spec:
           env:
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
-          image: synology/synology-csi:{{ $.Chart.AppVersion }}
+          {{- with .plugin }}
+          image: {{ .image }}:{{ default $.Chart.AppVersion .tag }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
           securityContext:
             allowPrivilegeEscalation: true
             capabilities:
