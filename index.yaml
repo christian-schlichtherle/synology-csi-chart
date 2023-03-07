@@ -3,9 +3,9 @@ entries:
   synology-csi:
   - apiVersion: v2
     appVersion: v1.1.1
-    created: "2023-03-07T18:33:48.675633421Z"
+    created: "2023-03-07T18:33:51.608350231Z"
     description: Installs the Synology CSI Driver
-    digest: a12646291f5562f83d3fe5a2e6a5f66e12e2c03dcc6d0158a0c6decbac24ee4f
+    digest: eecd04849867a4794356161e47f11113acc776c05737d5a16f0e5c37b688cf39
     home: https://github.com/christian-schlichtherle/synology-csi-chart
     keywords:
     - Synology
@@ -21,4 +21,4 @@ entries:
     urls:
     - https://christian-schlichtherle.github.io/synology-csi-chart/synology-csi-0.6.2.tgz
     version: 0.6.2
-generated: "2023-03-07T18:33:48.674500118Z"
+generated: "2023-03-07T18:33:51.607242516Z"
