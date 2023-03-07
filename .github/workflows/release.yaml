@@ -10,17 +10,19 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v3 # https://github.com/azure/setup-helm
         with:
           version: v3.11.1
       - name: Package Helm chart
         run: |
           set -o errexit -o nounset -o pipefail
           helm package . --destination dist
-          helm repo index dist --merge https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
-      - uses: peaceiris/actions-gh-pages@v3
+          curl --output dist/index.yaml --silent --fail https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/index.yaml
+          helm repo index dist --merge dist/index.yaml --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+      - uses: peaceiris/actions-gh-pages@v3 # https://github.com/peaceiris/actions-gh-pages
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          keep_files: true
           publish_dir: dist
 name: Release Charts
 on:
