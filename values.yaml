@@ -12,6 +12,11 @@ connections:
     password: password
     port: 5001
     username: username
+# Specifies affinity, nodeSelector and tolerations for the controller StatefulSet
+controller:
+  affinity: { }
+  nodeSelector: { }
+  tolerations: { }
 fullnameOverride: ""
 images:
   attacher:
@@ -40,6 +45,16 @@ images:
     pullPolicy: IfNotPresent
     tag: v4.2.1
 nameOverride: ""
+# Specifies affinity, nodeSelector and tolerations for the node DaemonSet
+node:
+  affinity: { }
+  nodeSelector: { }
+  tolerations: { }
+# Specifies affinity, nodeSelector and tolerations for the snapshotter StatefulSet
+snapshotter:
+  affinity: { }
+  nodeSelector: { }
+  tolerations: { }
 storageClasses:
   delete:
     ## One of true or false (default):

@@ -1,5 +1,6 @@
----
 {{- if $.Capabilities.APIVersions.Has "snapshot.storage.k8s.io/v1/VolumeSnapshotClass" }}
+{{- with $.Values }}
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -35,14 +36,14 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ include "synology-csi.fullname" $ }}-snapshotter
-    namespace: {{ .Release.Namespace }}
+    namespace: {{ $.Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: {{ include "synology-csi.fullname" $ }}-snapshotter
 
+{{- with .snapshotter | default (dict "dummy" true) }}
 ---
-{{- with $.Values.images }}
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
@@ -62,7 +63,11 @@ spec:
         app: snapshotter
         {{- include "synology-csi.selectorLabels" $ | nindent 8 }}
     spec:
+      {{- with .affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
+      {{- with $.Values.images }}
         - name: snapshotter
           args:
             - --csi-address=$(ADDRESS)
@@ -106,11 +111,19 @@ spec:
               readOnly: true
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy
+      {{- end }}
       hostNetwork: true
+      {{- with .nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "synology-csi.fullname" $ }}-snapshotter
+      {{- with .tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - {{ include "synology-csi.clientInfoSecretVolume" $ | nindent 10 }}
         - name: socket-dir
           emptyDir: { }
+{{- end }}
 {{- end }}
 {{- end }}

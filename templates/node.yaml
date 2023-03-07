@@ -1,3 +1,4 @@
+{{- with $.Values }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -37,14 +38,14 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ include "synology-csi.fullname" $ }}-node
-    namespace: {{ .Release.Namespace }}
+    namespace: {{ $.Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: {{ include "synology-csi.fullname" $ }}-node
 
+{{- with .node | default (dict "dummy" true) }}
 ---
-{{- with $.Values.images }}
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
@@ -63,7 +64,11 @@ spec:
         app: node
         {{- include "synology-csi.selectorLabels" $ | nindent 8 }}
     spec:
+      {{- with .affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
+      {{- with $.Values.images }}
         - name: node-driver-registrar
           args:
             - --csi-address=$(ADDRESS)
@@ -121,8 +126,15 @@ spec:
               mountPropagation: Bidirectional
             - name: plugin-dir
               mountPath: /csi
+      {{- end }}
       hostNetwork: true
+      {{- with .nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "synology-csi.fullname" $ }}-node
+      {{- with .tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - {{ include "synology-csi.clientInfoSecretVolume" $ | nindent 10 }}
         - name: device-dir
@@ -145,4 +157,5 @@ spec:
           hostPath:
             path: /var/lib/kubelet/plugins_registry
             type: Directory
+{{- end }}
 {{- end }}
