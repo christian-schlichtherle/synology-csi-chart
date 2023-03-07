@@ -17,7 +17,7 @@ jobs:
         run: |
           set -o errexit -o nounset -o pipefail
           helm package . --destination dist
-          helm repo index dist --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          helm repo index dist --merge https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -25,6 +25,5 @@ jobs:
 name: Release Charts
 on:
   push:
-    branches: [ main ]
     # Publish semver tags as releases:
     tags: [ 'v*.*.*' ]
