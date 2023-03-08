@@ -1,6 +1,5 @@
-{{- range $name, $value := $.Values.storageClasses }}
+{{- range $name, $_ := $.Values.storageClasses }}
 ---
-{{- with $value | default (dict "isDefault" false) }}
 allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -9,9 +8,14 @@ metadata:
     storageclass.kubernetes.io/is-default-class: {{ default "false" .isDefault | quote }}
   labels: {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ printf "%s-%s" (include "synology-csi.fullname" $) $name }}
-parameters: {{- default (dict "fsType" "ext4") .parameters | toYaml | nindent 2 }}
+{{- with .parameters }}
+parameters: {{- toYaml . | nindent 2 }}
+{{- end }}
 provisioner: csi.san.synology.com
-reclaimPolicy: {{ default "Delete" .reclaimPolicy }}
-volumeBindingMode: {{ default "Immediate" .volumeBindingMode }}
+{{- with .reclaimPolicy }}
+reclaimPolicy: {{ . }}
+{{- end }}
+{{- with .volumeBindingMode }}
+volumeBindingMode: {{ . }}
 {{- end }}
 {{- end }}

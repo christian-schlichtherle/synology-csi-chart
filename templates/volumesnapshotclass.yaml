@@ -1,9 +1,10 @@
 {{- if $.Capabilities.APIVersions.Has "snapshot.storage.k8s.io/v1/VolumeSnapshotClass" }}
-{{- range $name, $value := $.Values.volumeSnapshotClasses }}
+{{- range $name, $_ := $.Values.volumeSnapshotClasses }}
 ---
-{{- with $value | default (dict "isDefault" false) }}
 apiVersion: snapshot.storage.k8s.io/v1
-deletionPolicy: {{ default "Delete" .deletionPolicy }}
+{{- with .deletionPolicy }}
+deletionPolicy: {{ . }}
+{{- end }}
 driver: csi.san.synology.com
 kind: VolumeSnapshotClass
 metadata:
@@ -11,7 +12,8 @@ metadata:
     storageclass.kubernetes.io/is-default-class: {{ default "false" .isDefault | quote }}
   labels: {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ printf "%s-%s" (include "synology-csi.fullname" $) $name }}
-parameters: {{- default dict .parameters | toYaml | nindent 2 }}
+{{- with .parameters }}
+parameters: {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- end }}
 {{- end }}
