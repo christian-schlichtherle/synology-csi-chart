@@ -46,11 +46,11 @@ To uninstall the chart:
 
 As usual with Helm, you can override the values in the file [`values.yaml`](values.yaml) to suit your requirements - see
 [Customizing the Chart Before Installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing).
-In particular, override the section `connections` to match the connection parameters and credentials for
+In particular, override the section `clientInfoSecret.clients` to match the connection parameters and credentials for
 accessing your Synology Diskstation.
 
-You can also use an existing secret (specify using the key `clientInfoSecretName`) that contains the `connections`
-details under `client-info.yaml` key:
+You can also use an existing secret (specify using the key `clientInfoSecret.name`) that contains a `clients`
+dictionary under `client-info.yaml` key:
 
 ```yaml
 apiVersion: v1
@@ -152,7 +152,7 @@ $ kubectl logs -n $NAMESPACE -l helm.sh/template=controller.yaml -c plugin
 ```
 
 After all, we found out that the plugin isn't able to connect to the Diskstation.
-This is because I didn't edit the `connections` dictionary in the `values.yaml` file.
+This is because I didn't edit the `clientInfoSecret.clients` dictionary in the `values.yaml` file.
 After fixing that the test passes as expected.
 
 ### Uninstalling the Chart
