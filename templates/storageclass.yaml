@@ -1,4 +1,5 @@
 {{- range $name, $_ := $.Values.storageClasses }}
+{{- if not .disabled }}
 ---
 allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
@@ -17,5 +18,6 @@ reclaimPolicy: {{ . }}
 {{- end }}
 {{- with .volumeBindingMode }}
 volumeBindingMode: {{ . }}
+{{- end }}
 {{- end }}
 {{- end }}

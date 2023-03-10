@@ -58,6 +58,8 @@ snapshotter:
 storageClasses:
   delete:
     ## One of true or false (default):
+    #disabled: false
+    ## One of true or false (default):
     #isDefault: false
     ## One of "Retain" or "Delete" (default):
     reclaimPolicy: Delete
@@ -74,6 +76,8 @@ storageClasses:
     reclaimPolicy: Retain
 volumeSnapshotClasses:
   delete: { }
+    ## One of true or false (default):
+    #disabled: false
     ## One of "Retain" or "Delete" (default):
     #deletionPolicy: Delete
     ## One of true or false (default):
