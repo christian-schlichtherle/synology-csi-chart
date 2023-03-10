@@ -108,7 +108,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
           {{- with .plugin }}
-          image: {{ .image }}:{{ default $.Chart.AppVersion .tag }}
+          image: {{ .image }}:{{ .tag | default $.Chart.AppVersion }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:

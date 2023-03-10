@@ -30,8 +30,8 @@ images:
   plugin:
     image: synology/synology-csi
     pullPolicy: IfNotPresent
-    # Defaults to $.Chart.AppVersion if empty or not present:
-    #tag: ""
+    # Defaults to {{ $.Chart.AppVersion }} if empty or not present:
+    tag: ""
   provisioner:
     image: k8s.gcr.io/sig-storage/csi-provisioner
     pullPolicy: IfNotPresent
