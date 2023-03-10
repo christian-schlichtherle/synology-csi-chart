@@ -44,6 +44,7 @@ images:
     image: k8s.gcr.io/sig-storage/csi-snapshotter
     pullPolicy: IfNotPresent
     tag: v6.2.1
+installCSIDriver: true
 nameOverride: ""
 # Specifies affinity, nodeSelector and tolerations for the node DaemonSet
 node:
