@@ -20,7 +20,7 @@ clientInfoSecret:
 controller:
   affinity: { }
   nodeSelector: { }
-  tolerations: { }
+  tolerations: [ ]
 fullnameOverride: ""
 images:
   attacher:
@@ -54,12 +54,12 @@ nameOverride: ""
 node:
   affinity: { }
   nodeSelector: { }
-  tolerations: { }
+  tolerations: [ ]
 # Specifies affinity, nodeSelector and tolerations for the snapshotter StatefulSet
 snapshotter:
   affinity: { }
   nodeSelector: { }
-  tolerations: { }
+  tolerations: [ ]
 storageClasses:
   delete:
     # One of true or false (default):
