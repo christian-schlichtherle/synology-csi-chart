@@ -57,9 +57,5 @@ Client Info Secret Volume:
 {{- define "synology-csi.clientInfoSecretVolume" -}}
 name: client-info
 secret:
-{{- if .Values.clientInfoSecretName }}
-  secretName: {{ $.Values.clientInfoSecretName }}
-{{- else }}
-  secretName: {{ include "synology-csi.fullname" . }}-client-info
-{{- end }}
+  secretName: {{ .Values.clientInfoSecret.name | default (include "synology-csi.fullname" . | printf "%s-client-info") }}
 {{- end }}
