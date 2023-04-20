@@ -36,7 +36,7 @@ You can then run `helm search repo synology-csi-chart` to see the charts.
 
 To install the chart:
 
-    helm install <release-name> synology-csi-chart/synology-csi-chart
+    helm install <release-name> synology-csi-chart/synology-csi
 
 To uninstall the chart:
 
