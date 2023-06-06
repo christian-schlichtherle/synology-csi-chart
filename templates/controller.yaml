@@ -101,9 +101,6 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
-            allowPrivilegeEscalation: true
-            capabilities:
-              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: socket-dir
@@ -120,9 +117,6 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
-            allowPrivilegeEscalation: true
-            capabilities:
-              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: socket-dir
@@ -139,9 +133,6 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
-            allowPrivilegeEscalation: true
-            capabilities:
-              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: socket-dir
@@ -160,9 +151,6 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
-            allowPrivilegeEscalation: true
-            capabilities:
-              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: client-info
