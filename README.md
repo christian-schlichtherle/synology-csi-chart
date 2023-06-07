@@ -21,7 +21,7 @@ issues and to benefit from the advanced resource management features of Helm.
   Please refer to Helm's [documentation](https://helm.sh/docs) to get started.
 + A Synology Diskstation with the SAN Manager package installed (the package name was changed in DSM 7).
 + A cluster with [Kubernetes](https://kubernetes.io) version 1.20 or later.
-+ `iscsiadm` installed on every cluster node.
++ `iscsiadm` installed on every cluster node if and only if you want to mount iSCSI volumes.
 + `kubectl` installed on your localhost and configured to connect to the cluster.
 + Optional: [CSI Snapshotter](https://github.com/kubernetes-csi/external-snapshotter) installed in the cluster.
 
