@@ -69,7 +69,7 @@ spec:
       {{- end }}
       containers:
       {{- with $.Values.images }}
-        - name: node-driver-registrar
+        - name: csi-driver-registrar
           args:
             - --csi-address=$(ADDRESS)
             - --kubelet-registration-path=$(REGISTRATION_PATH)
@@ -94,7 +94,7 @@ spec:
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
-        - name: plugin
+        - name: csi-plugin
           args:
             - --client-info=/etc/synology/client-info.yaml
             - --endpoint=$(CSI_ENDPOINT)
