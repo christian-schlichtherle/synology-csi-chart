@@ -24,11 +24,11 @@ controller:
 fullnameOverride: ""
 images:
   attacher:
-    image: k8s.gcr.io/sig-storage/csi-attacher
+    image: registry.k8s.io/sig-storage/csi-attacher
     pullPolicy: IfNotPresent
     tag: v4.3.0
   nodeDriverRegistrar:
-    image: k8s.gcr.io/sig-storage/csi-node-driver-registrar
+    image: registry.k8s.io/sig-storage/csi-node-driver-registrar
     pullPolicy: IfNotPresent
     tag: v2.8.0
   plugin:
@@ -37,15 +37,15 @@ images:
     # Defaults to {{ $.Chart.AppVersion }} if empty or not present:
     tag: ""
   provisioner:
-    image: k8s.gcr.io/sig-storage/csi-provisioner
+    image: registry.k8s.io/sig-storage/csi-provisioner
     pullPolicy: IfNotPresent
     tag: v3.5.0
   resizer:
-    image: k8s.gcr.io/sig-storage/csi-resizer
+    image: registry.k8s.io/sig-storage/csi-resizer
     pullPolicy: IfNotPresent
     tag: v1.8.0
   snapshotter:
-    image: k8s.gcr.io/sig-storage/csi-snapshotter
+    image: registry.k8s.io/sig-storage/csi-snapshotter
     pullPolicy: IfNotPresent
     tag: v6.2.2
 installCSIDriver: true
