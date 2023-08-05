@@ -7,7 +7,6 @@ metadata:
   name: csi.san.synology.com
 spec:
   attachRequired: true # Indicates the driver requires an attach operation (TODO: ControllerPublishVolume should be implemented)
-  fsGroupPolicy: File
   podInfoOnMount: true
   volumeLifecycleModes:
     - Persistent
