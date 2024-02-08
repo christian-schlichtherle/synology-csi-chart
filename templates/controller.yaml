@@ -93,6 +93,7 @@ spec:
             - --csi-address=$(ADDRESS)
             - --timeout=60s
             - --v=5
+            - --extra-create-metadata
           env:
             - name: ADDRESS
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
