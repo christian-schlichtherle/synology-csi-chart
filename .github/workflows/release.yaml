@@ -5,10 +5,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4 # https://github.com/actions/checkout
-      - name: Install Helm
-        uses: azure/setup-helm@v4 # https://github.com/azure/setup-helm
+      - uses: actions/checkout@v4 # https://github.com/actions/checkout
+      - uses: azure/setup-helm@v4 # https://github.com/azure/setup-helm
       - name: Package and index Helm chart
         run: |
           set -o errexit -o nounset -o pipefail
