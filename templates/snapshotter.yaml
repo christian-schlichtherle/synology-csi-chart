@@ -42,7 +42,7 @@ roleRef:
   kind: ClusterRole
   name: {{ include "synology-csi.fullname" $ }}-snapshotter
 
-{{- with .snapshotter | default (dict "dummy" true) }}
+{{- with .snapshotter }}
 ---
 kind: StatefulSet
 apiVersion: apps/v1
@@ -67,7 +67,6 @@ spec:
       affinity: {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      {{- with $.Values.images }}
         - name: csi-snapshotter
           args:
             - --csi-address=$(ADDRESS)
@@ -75,7 +74,7 @@ spec:
           env:
             - name: ADDRESS
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
-          {{- with .snapshotter }}
+          {{- with $.Values.images.snapshotter }}
           image: {{ .image }}:{{ .tag }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
@@ -93,7 +92,7 @@ spec:
           env:
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
-          {{- with .plugin }}
+          {{- with $.Values.images.plugin }}
           image: {{ .image }}:{{ .tag | default $.Chart.AppVersion }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
@@ -105,7 +104,6 @@ spec:
               readOnly: true
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy
-      {{- end }}
       hostNetwork: true
       {{- with .nodeSelector }}
       nodeSelector: {{- toYaml . | nindent 8 }}

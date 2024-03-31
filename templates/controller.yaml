@@ -62,7 +62,7 @@ roleRef:
   kind: ClusterRole
   name: {{ include "synology-csi.fullname" $ }}-controller
 
-{{- with .controller | default (dict "dummy" true) }}
+{{- with .controller }}
 ---
 kind: StatefulSet
 apiVersion: apps/v1
@@ -87,17 +87,16 @@ spec:
       affinity: {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      {{- with $.Values.images }}
         - name: csi-provisioner
           args:
             - --csi-address=$(ADDRESS)
+            - --extra-create-metadata
             - --timeout=60s
             - --v=5
-            - --extra-create-metadata
           env:
             - name: ADDRESS
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
-          {{- with .provisioner }}
+          {{- with $.Values.images.provisioner }}
           image: {{ .image }}:{{ .tag }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
@@ -113,7 +112,7 @@ spec:
           env:
             - name: ADDRESS
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
-          {{- with .attacher }}
+          {{- with $.Values.images.attacher }}
           image: {{ .image }}:{{ .tag }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
@@ -129,7 +128,7 @@ spec:
           env:
             - name: ADDRESS
               value: /var/lib/csi/sockets/pluginproxy/csi.sock
-          {{- with .resizer }}
+          {{- with $.Values.images.resizer }}
           image: {{ .image }}:{{ .tag }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
@@ -147,7 +146,7 @@ spec:
           env:
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
-          {{- with .plugin }}
+          {{- with $.Values.images.plugin }}
           image: {{ .image }}:{{ .tag | default $.Chart.AppVersion }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
@@ -159,7 +158,6 @@ spec:
               readOnly: true
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy
-      {{- end }}
       hostNetwork: true
       {{- with .nodeSelector }}
       nodeSelector: {{- toYaml . | nindent 8 }}

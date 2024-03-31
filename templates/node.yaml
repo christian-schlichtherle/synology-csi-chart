@@ -44,7 +44,7 @@ roleRef:
   kind: ClusterRole
   name: {{ include "synology-csi.fullname" $ }}-node
 
-{{- with .node | default (dict "dummy" true) }}
+{{- with .node }}
 ---
 kind: DaemonSet
 apiVersion: apps/v1
@@ -68,7 +68,6 @@ spec:
       affinity: {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      {{- with $.Values.images }}
         - name: csi-driver-registrar
           args:
             - --csi-address=$(ADDRESS)
@@ -83,17 +82,18 @@ spec:
                   fieldPath: spec.nodeName
             - name: REGISTRATION_PATH
               value: {{ $.Values.node.kubeletPath }}/plugins/csi.san.synology.com/csi.sock
-          {{- with .nodeDriverRegistrar }}
+          {{- with $.Values.images.nodeDriverRegistrar }}
           image: {{ .image }}:{{ .tag }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
             privileged: true
           volumeMounts:
+            - name: kubelet-dir
+              mountPath: /registration
+              subPath: plugins_registry
             - name: plugin-dir
               mountPath: /csi
-            - name: registration-dir
-              mountPath: /registration
         - name: csi-plugin
           args:
             - --client-info=/etc/synology/client-info.yaml
@@ -107,7 +107,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-          {{- with .plugin }}
+          {{- with $.Values.images.plugin }}
           image: {{ .image }}:{{ .tag | default $.Chart.AppVersion }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
@@ -122,11 +122,10 @@ spec:
             - name: host-root
               mountPath: /host
             - name: kubelet-dir
-              mountPath: {{ $.Values.node.kubeletPath }}
+              mountPath: {{ .kubeletPath }}
               mountPropagation: Bidirectional
             - name: plugin-dir
               mountPath: /csi
-      {{- end }}
       hostNetwork: true
       {{- with .nodeSelector }}
       nodeSelector: {{- toYaml . | nindent 8 }}
@@ -147,15 +146,11 @@ spec:
             type: Directory
         - name: kubelet-dir
           hostPath:
-            path: {{ $.Values.node.kubeletPath }}
+            path: {{ .kubeletPath }}
             type: Directory
         - name: plugin-dir
           hostPath:
-            path: {{ $.Values.node.kubeletPath }}/plugins/csi.san.synology.com
+            path: {{ .kubeletPath }}/plugins/csi.san.synology.com
             type: DirectoryOrCreate
-        - name: registration-dir
-          hostPath:
-            path: {{ $.Values.node.kubeletPath }}/plugins_registry
-            type: Directory
 {{- end }}
 {{- end }}
