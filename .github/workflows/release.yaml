@@ -6,13 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3 # https://github.com/actions/checkout
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v4 # https://github.com/actions/checkout
       - name: Install Helm
-        uses: azure/setup-helm@v3 # https://github.com/azure/setup-helm
-        with:
-          version: v3.11.1
+        uses: azure/setup-helm@v4 # https://github.com/azure/setup-helm
       - name: Package and index Helm chart
         run: |
           set -o errexit -o nounset -o pipefail
