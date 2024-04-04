@@ -9,8 +9,12 @@ kubeVersion: ">= 1.20.0"
 maintainers:
   - name: Christian Schlichtherle
     url: https://github.com/christian-schlichtherle
+  - name: Zoc
+    url: https://github.com/zoc
+
 name: synology-csi
 sources:
   - https://github.com/christian-schlichtherle/synology-csi-chart/tree/main
+  - https://github.com/zoc/synology-csi-chart/tree/main
   - https://github.com/SynologyOpenSource/synology-csi/tree/main
-version: 0.9.9-SNAPSHOT # must be SemVer 2
+version: 0.9.9 # must be SemVer 2

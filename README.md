@@ -29,7 +29,7 @@ issues and to benefit from the advanced resource management features of Helm.
 
 Once Helm has been set up correctly, add the repo as follows:
 
-    helm repo add synology-csi-chart https://christian-schlichtherle.github.io/synology-csi-chart
+    helm repo add synology-csi-chart https://zoc.github.io/synology-csi-chart
 
 If you had already added this repo earlier, run `helm repo update` to retrieve the latest versions of the packages.
 You can then run `helm search repo synology-csi-chart` to see the charts.
