@@ -1,6 +1,6 @@
 {{- if $.Capabilities.APIVersions.Has "snapshot.storage.k8s.io/v1/VolumeSnapshotClass" }}
-{{- if not .disabled }}
 {{- range $name, $_ := $.Values.volumeSnapshotClasses }}
+{{- if not .disabled }}
 ---
 apiVersion: snapshot.storage.k8s.io/v1
 {{- with .deletionPolicy }}
