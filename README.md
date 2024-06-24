@@ -57,14 +57,24 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: <release-name>-client-info
-data:
-  client-info.yaml: |-
-    Y2xpZW50czoKLSBob3N0OiAxOTIuMTY4LjEuMQogIGh0dHBzOiBmYWxzZQogIHBhc3N3b3JkOiBwYXNzd29yZAogIHBvcnQ6IDUwMDAKICB1c2VybmFtZTogdXNlcm5hbWUKLSBob3N0OiAxOTIuMTY4LjEuMQogIGh0dHBzOiBmYWxzZQogIHBhc3N3b3JkOiBwYXNzd29yZAogIHBvcnQ6IDUwMDEKICB1c2VybmFtZTogdXNlcm5hbWU=
+stringData:
+  client-info.yaml: |
+    clients:
+    - host: 192.168.1.1
+      https: false
+      password: changeme
+      port: 5000
+      username: changeme
+    - host: 192.168.1.1
+      https: true
+      password: changeme
+      port: 5001
+      username: changeme
 ```
 
 It's a good practice to create a dedicated user for accessing the Diskstation Manager (DSM) application.
 Your user needs to be a member of the `administrators` group and have permission to access the `DSM` application.
-You can reject any other permissions.
+You can safely reject all other permissions.
 
 ## Local Development
 
