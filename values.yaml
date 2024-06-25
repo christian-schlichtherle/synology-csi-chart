@@ -69,6 +69,8 @@ storageClasses:
     ##disabled: false
     # One of true or false (default):
     ##isDefault: false
+    ##mountOptions:
+    ##  - mfsymlinks
     # One of "Retain" or "Delete" (default):
     reclaimPolicy: Delete
     # One of "WaitForFirstConsumer" or "Immediate" (default):
@@ -90,8 +92,6 @@ volumeSnapshotClasses:
     ##deletionPolicy: Delete
     # One of true or false (default):
     ##isDefault: false
-    ##mountOptions:
-    ##  - mfsymlinks
     # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
     ##parameters:
     ##  description: "Kubernetes CSI"
