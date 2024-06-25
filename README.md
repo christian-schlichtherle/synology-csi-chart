@@ -154,7 +154,7 @@ deployed as part of this chart.
 Let's examine the logs of this plugin container:
 
 ```
-$ kubectl logs -n $NAMESPACE -l helm.sh/template=controller.yaml -c plugin
+$ kubectl logs -n $NAMESPACE -l helm.sh/template=controller.yaml -c csi-plugin
 [...]
 2022-01-25T08:19:57Z [INFO] [driver/utils.go:104] GRPC call: /csi.v1.Controller/CreateVolume
 2022-01-25T08:19:57Z [INFO] [driver/utils.go:105] GRPC request: {"capacity_range":{"required_bytes":1073741824},"name":"pvc-a3d7962b-0ab5-4184-b545-a44cc424aaf1","parameters":{"fsType":"ext4"},"volume_capabilities":[{"AccessType":{"Mount":{"fs_type":"ext4"}},"access_mode":{"mode":1}}]}
