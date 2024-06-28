@@ -5,7 +5,7 @@ This is a
 [Synology CSI Driver](https://github.com/SynologyOpenSource/synology-csi) in a
 [Kubernetes](https://kubernetes.io) cluster.
 It has been forked from the original resource manifests bundled with the Synology CSI Driver in order to resolve some
-issues and to benefit from the advanced resource management features of Helm.
+issues and to benefit from the advanced resource management features available with Helm.
 
 ## Features
 

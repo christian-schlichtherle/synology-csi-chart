@@ -1,17 +1,18 @@
 ---
+# The client info secret defines how the K8s nodes can connect to the Synology Diskstation Manager (DSM).
 clientInfoSecret:
-  # How to connect to your Synology Diskstation?
+  # How to connect to the Synology Diskstation?
   clients:
-    - host: 192.168.1.1   # the IP address of the Diskstation
-      https: false        # whether the port expects HTTPS or not
-      password: password  # the password of the dedicated CSI user
-      port: 5000          # the port for connecting to the Diskstation Manager application
-      username: username  # the name of the dedicated CSI user
+    - host: 192.168.1.1    # the IP address of the Diskstation
+      https: false         # whether the port expects HTTPS or not
+      password: <password> # the password of the CSI user
+      port: 5000           # the port for connecting to the Diskstation Manager application
+      username: <username> # the name of the CSI user
     - host: 192.168.1.1
       https: true
-      password: password
+      password: <password>
       port: 5001
-      username: username
+      username: <username>
   # Whether to create the secret if the chart gets installed or not; ignored on updates.
   create: true
   # Defaults to {{ include "synology-csi.fullname" $ }}-client-info if empty or not present:
@@ -58,43 +59,67 @@ node:
   kubeletPath: /var/lib/kubelet
   nodeSelector: { }
   tolerations: [ ]
+# This secret holds the credentials for the SMB user - this is not used for iSCSI volumes:
+smbUserSecret:
+  stringData:
+    password: <password> # the password of the SMB user
+    username: <username> # the name of the SMB user
+  # Whether to create the secret if the chart gets installed or not; ignored on updates.
+  create: false
+  # Defaults to {{ include "synology-csi.fullname" $ }}-smb-user if empty or not present:
+  name: ""
 # Specifies affinity, nodeSelector and tolerations for the snapshotter StatefulSet
 snapshotter:
   affinity: { }
   nodeSelector: { }
   tolerations: [ ]
 storageClasses:
-  delete:
-    # One of true or false (default):
-    ##disabled: false
-    # One of true or false (default):
-    ##isDefault: false
-    ##mountOptions:
-    ##  - mfsymlinks
-    # One of "Retain" or "Delete" (default):
-    reclaimPolicy: Delete
-    # One of "WaitForFirstConsumer" or "Immediate" (default):
-    ##volumeBindingMode: Immediate
-
+  iscsi-delete:
+    ## Optional: `true` or `false` (default):
+    #disabled: false
+    ## Optional: `true` or `false` (default):
+    #isDefault: false
     # If not present, some location will be chosen to create volumes with the filesystem type ext4.
     # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
-    ##parameters:
-    ##  dsm: "1.1.1.1"
-    ##  fsType: ext4
-    ##  location: /volume1
-  retain:
+    #parameters:
+    #  dsm: 192.168.1.1            # optional: needs to be present in the client-info secret
+    #  formatOptions: --no-discard # optional (iSCSI only): mkfs.* options
+    #  fsType: ext4                # optional (iSCSI only): `btrfs` or `ext4` (default)
+    #  location: /volume1          # optional, defaults to your primary volume
+    #  protocol: iscsi             # optional: `smb` or `iscsi` (default)
+    # Optional: `Retain` or `Delete` (default):
+    reclaimPolicy: Delete
+    ## Optional: `WaitForFirstConsumer` or `Immediate` (default):
+    #volumeBindingMode: Immediate
+  iscsi-retain:
+    reclaimPolicy: Retain
+  smb-delete:
+    disabled: true
+    mountOptions: # SMB only
+      - mfsymlinks
+    parameters:
+      protocol: smb
+    reclaimPolicy: Delete
+  smb-retain:
+    disabled: true
+    mountOptions: # SMB only
+      - mfsymlinks
+    parameters:
+      protocol: smb
     reclaimPolicy: Retain
 volumeSnapshotClasses:
-  delete: { }
-    # One of true or false (default):
-    ##disabled: false
+  delete:
+    ## One of true or false (default):
+    #disabled: false
     # One of "Retain" or "Delete" (default):
-    ##deletionPolicy: Delete
-    # One of true or false (default):
-    ##isDefault: false
-    # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
-    ##parameters:
-    ##  description: "Kubernetes CSI"
-    ##  is_locked: "false"
+    deletionPolicy: Delete
+    disabled: false
+    ## One of true or false (default):
+    #isDefault: false
+    ## Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
+    #parameters:
+    #  description: Kubernetes CSI
+    #  is_locked: "false"
   retain:
     deletionPolicy: Retain
+    disabled: false

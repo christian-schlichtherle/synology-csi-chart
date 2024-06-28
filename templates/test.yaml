@@ -10,7 +10,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ include "synology-csi.fullname" $ }}-delete
+  storageClassName: {{ include "synology-csi.fullname" $ }}-iscsi-delete
   resources:
     requests:
       storage: 1Gi

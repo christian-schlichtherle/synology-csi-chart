@@ -13,7 +13,12 @@ metadata:
 mountOptions: {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- with .parameters }}
-parameters: {{- toYaml . | nindent 2 }}
+parameters:
+{{- if eq .protocol "smb" }}
+  csi.storage.k8s.io/node-stage-secret-name: {{ $.Values.smbUserSecret.name | default (include "synology-csi.fullname" $ | printf "%s-smb-user") }}
+  csi.storage.k8s.io/node-stage-secret-namespace: {{ $.Release.Namespace }}
+{{- end }}
+{{- toYaml . | nindent 2 }}
 {{- end }}
 provisioner: csi.san.synology.com
 {{- with .reclaimPolicy }}
