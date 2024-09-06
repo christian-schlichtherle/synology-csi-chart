@@ -1,0 +1,21 @@
+{{- if (default false .Values.talos) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "synology-csi.fullname" $ }}-chroot-configmap
+  namespace: {{ .Release.Namespace }}
+data:
+  chroot.sh: |
+    #!/usr/bin/env bash
+    DIR="/host" # csi-node mount / of the node to /host in the container
+    BIN="$(basename "$0")"
+
+    iscsid_pid=$(pgrep iscsid)
+
+    echo "$@"
+
+    if [ -d "$DIR" ]; then
+        echo "entering nsenter"
+        nsenter --mount="/proc/${iscsid_pid}/ns/mnt" --net="/proc/${iscsid_pid}/ns/net" -- "/usr/local/sbin/$BIN" "$@"
+    fi
+{{- end }}
