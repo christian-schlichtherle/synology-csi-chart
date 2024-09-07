@@ -6,22 +6,38 @@ HELM_RELEASE ?= $(RELEASE)
 
 .DEFAULT_GOAL := upgrade
 
+.PHONY: diff
+diff:
+	helm diff upgrade $(HELM_RELEASE) . \
+		--namespace $(HELM_NAMESPACE) \
+		$(HELM_OPTS)
+
 .PHONY: fio
 fio:
 	docker buildx build --platform linux/amd64,linux/arm64 -t christianschlichtherle/fio fio --push
 
 .PHONY: template render
 template render:
-	helm template $(HELM_RELEASE) . --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+	helm template $(HELM_RELEASE) . \
+		--namespace $(HELM_NAMESPACE) \
+		$(HELM_OPTS)
 
 .PHONY: test
 test:
-	helm test $(HELM_RELEASE) --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+	helm test $(HELM_RELEASE) \
+		--namespace $(HELM_NAMESPACE) \
+		$(HELM_OPTS)
 
 .PHONY: uninstall down
 uninstall down:
-	helm uninstall $(HELM_RELEASE) --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+	helm uninstall $(HELM_RELEASE) \
+		--namespace $(HELM_NAMESPACE) \
+		$(HELM_OPTS)
 
 .PHONY: upgrade up
 upgrade up:
-	helm upgrade $(HELM_RELEASE) . --create-namespace --install --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+	helm upgrade $(HELM_RELEASE) . \
+		--create-namespace \
+		--install \
+		--namespace $(HELM_NAMESPACE) \
+		$(HELM_OPTS)
