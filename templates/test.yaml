@@ -1,3 +1,33 @@
+{{- range $name, $_ := $.Values.storageClasses }}
+{{- if not .disabled }}
+{{- $isSMB := dig "parameters" "protocol" "iscsi" . | eq "smb" }}
+
+{{- if $isSMB }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    helm.sh/hook: test
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+  labels:
+    app: test
+    {{- include "synology-csi.labels" $ | nindent 4 }}
+  name: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  csi:
+    volumeAttributes:
+      protocol: smb
+      source: //{{ (index $.Values.clientInfoSecret.clients 0).host }}/{{ include "synology-csi.fullname" $ }}-{{ $name }}-test
+  mountOptions:
+    - mfsymlinks
+  storageClassName: {{ include "synology-csi.fullname" $ }}-{{ $name }}
+{{- end }}
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -5,15 +35,21 @@ metadata:
   annotations:
     helm.sh/hook: test
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
-  labels: {{- include "synology-csi.labels" $ | nindent 4 }}
-  name: {{ include "synology-csi.fullname" $ }}-test
+  labels:
+    app: test
+    {{- include "synology-csi.labels" $ | nindent 4 }}
+  name: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
 spec:
   accessModes:
-    - ReadWriteOnce
-  storageClassName: {{ include "synology-csi.fullname" $ }}-iscsi-delete
+    - {{ ternary "ReadWriteMany" "ReadWriteOnce" $isSMB }}
   resources:
     requests:
-      storage: 1Gi
+      storage: 10Gi
+  {{- if $isSMB }}
+  volumeName: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
+  {{- else }}
+  storageClassName: {{ include "synology-csi.fullname" $ }}-{{ $name }}
+  {{- end }}
 
 ---
 apiVersion: v1
@@ -25,11 +61,11 @@ metadata:
   labels:
     app: test
     {{- include "synology-csi.labels" $ | nindent 4 }}
-  name: {{ include "synology-csi.fullname" $ }}-test
+  name: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
 spec:
   containers:
-    - command: [ "/bin/sh", "-c", "echo asdf >file && echo asdf | cmp - file" ]
-      image: busybox
+    - command: [ "/bin/sh", "-c", "while true; do sleep 86400; done" ]
+      image: christianschlichtherle/fio:3.33
       name: readwrite
       volumeMounts:
         - mountPath: /data
@@ -39,4 +75,6 @@ spec:
   volumes:
     - name: data
       persistentVolumeClaim:
-        claimName: {{ include "synology-csi.fullname" $ }}-test
+        claimName: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
+{{- end }}
+{{- end }}

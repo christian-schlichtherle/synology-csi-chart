@@ -1,0 +1,11 @@
+[test]
+ioengine=libaio
+iodepth=16
+direct=1
+size=1G
+runtime=60s
+time_based
+numjobs=4
+group_reporting
+rw=randrw
+bs=4k
