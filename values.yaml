@@ -24,31 +24,36 @@ controller:
   tolerations: [ ]
 fullnameOverride: ""
 images:
+  # https://kubernetes-csi.github.io/docs/external-attacher.html
   attacher:
     image: registry.k8s.io/sig-storage/csi-attacher
     pullPolicy: IfNotPresent
-    tag: v4.3.0
+    tag: v4.4.0
+  # https://kubernetes-csi.github.io/docs/node-driver-registrar.html
   nodeDriverRegistrar:
     image: registry.k8s.io/sig-storage/csi-node-driver-registrar
     pullPolicy: IfNotPresent
-    tag: v2.8.0
+    tag: v2.9.0
   plugin:
     image: synology/synology-csi
     pullPolicy: IfNotPresent
     # Defaults to {{ $.Chart.AppVersion }} if empty or not present:
     tag: ""
+  # https://kubernetes-csi.github.io/docs/external-provisioner.html
   provisioner:
     image: registry.k8s.io/sig-storage/csi-provisioner
     pullPolicy: IfNotPresent
-    tag: v3.5.0
+    tag: v3.6.0
+  # https://kubernetes-csi.github.io/docs/external-resizer.html
   resizer:
     image: registry.k8s.io/sig-storage/csi-resizer
     pullPolicy: IfNotPresent
-    tag: v1.8.0
+    tag: v1.9.0
+  # https://kubernetes-csi.github.io/docs/external-snapshotter.html
   snapshotter:
     image: registry.k8s.io/sig-storage/csi-snapshotter
     pullPolicy: IfNotPresent
-    tag: v6.2.2
+    tag: v6.3.0
 installCSIDriver: true
 nameOverride: ""
 # Specifies affinity, nodeSelector and tolerations for the node DaemonSet

@@ -26,7 +26,10 @@ rules:
     resources: [ "persistentvolumes" ]
     verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
   - apiGroups: [ "" ]
-    resources: [ "nodes", "pods" ]
+    resources: [ "nodes" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "" ]
+    resources: [ "pods" ]
     verbs: [ "get", "list", "watch" ]
   - apiGroups: [ "storage.k8s.io" ]
     resources: [ "csinodes" ]
@@ -46,6 +49,9 @@ rules:
   - apiGroups: [ "snapshot.storage.k8s.io" ]
     resources: [ "volumesnapshotcontents" ]
     verbs: [ "get", "list" ]
+  - apiGroups: [ "" ]
+    resources: [ "secrets" ]
+    verbs: [ "get" ]
 
 ---
 kind: ClusterRoleBinding
@@ -101,6 +107,9 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: socket-dir
@@ -117,6 +126,9 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: socket-dir
@@ -133,6 +145,9 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: socket-dir
@@ -151,6 +166,9 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add: [ "SYS_ADMIN" ]
             privileged: true
           volumeMounts:
             - name: client-info

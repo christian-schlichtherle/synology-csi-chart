@@ -70,8 +70,8 @@ spec:
       containers:
         - name: csi-driver-registrar
           args:
-            - --csi-address=$(ADDRESS)
-            - --kubelet-registration-path=$(REGISTRATION_PATH)
+            - --csi-address=$(ADDRESS)                         # the csi socket path inside the pod
+            - --kubelet-registration-path=$(REGISTRATION_PATH) # the csi socket path on the host node
             - --v=5
           env:
             - name: ADDRESS
