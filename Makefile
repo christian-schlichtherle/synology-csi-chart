@@ -10,6 +10,7 @@ HELM_RELEASE ?= $(RELEASE)
 diff:
 	helm diff upgrade $(HELM_RELEASE) . \
 		--namespace $(HELM_NAMESPACE) \
+		--values local.yaml \
 		$(HELM_OPTS)
 
 .PHONY: fio
@@ -20,6 +21,7 @@ fio:
 template render:
 	helm template $(HELM_RELEASE) . \
 		--namespace $(HELM_NAMESPACE) \
+		--values local.yaml \
 		$(HELM_OPTS)
 
 .PHONY: test
@@ -40,4 +42,5 @@ upgrade up:
 		--create-namespace \
 		--install \
 		--namespace $(HELM_NAMESPACE) \
+		--values local.yaml \
 		$(HELM_OPTS)
