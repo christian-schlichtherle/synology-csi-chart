@@ -4,18 +4,20 @@ RELEASE ?= $(NAMESPACE)
 HELM_NAMESPACE ?= $(NAMESPACE)
 HELM_RELEASE ?= $(RELEASE)
 
-.PHONY: up upgrade
-up upgrade:
-	helm upgrade $(HELM_RELEASE) . --create-namespace --install --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+.DEFAULT_GOAL := upgrade
 
-.PHONY: render template
-render template:
+.PHONY: template render
+template render:
 	helm template $(HELM_RELEASE) . --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
 
 .PHONY: test
 test:
 	helm test $(HELM_RELEASE) --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
 
-.PHONY: down uninstall
-down uninstall:
+.PHONY: uninstall down
+uninstall down:
 	helm uninstall $(HELM_RELEASE) --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
+
+.PHONY: upgrade up
+upgrade up:
+	helm upgrade $(HELM_RELEASE) . --create-namespace --install --namespace $(HELM_NAMESPACE) $(HELM_OPTS)
