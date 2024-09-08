@@ -17,8 +17,8 @@ diff:
 fio:
 	docker buildx build --platform linux/amd64,linux/arm64 -t christianschlichtherle/fio fio --push
 
-.PHONY: template render
-template render:
+.PHONY: template
+template:
 	helm template $(HELM_RELEASE) . \
 		--namespace $(HELM_NAMESPACE) \
 		--values local.yaml \
