@@ -28,6 +28,7 @@ template render:
 test:
 	helm test $(HELM_RELEASE) \
 		--namespace $(HELM_NAMESPACE) \
+		--timeout 10m \
 		$(HELM_OPTS)
 
 .PHONY: uninstall down

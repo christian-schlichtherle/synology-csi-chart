@@ -84,34 +84,39 @@ storageClasses:
     #disabled: false
     ## Optional: `true` or `false` (default):
     #isDefault: false
-    # If not present, some location will be chosen to create volumes with the filesystem type ext4.
-    # Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
+    ## If not present, some location will be chosen to create volumes with the filesystem type ext4.
+    ## Note that these parameters cannot get updated once deployed - any subsequent changes get ignored!
     #parameters:
     #  dsm: 192.168.1.1            # optional: needs to be present in the client-info secret
     #  formatOptions: --no-discard # optional (iSCSI only): mkfs.* options
     #  fsType: ext4                # optional (iSCSI only): `btrfs` or `ext4` (default)
     #  location: /volume1          # optional, defaults to your primary volume
     #  protocol: iscsi             # optional: `smb` or `iscsi` (default)
-    # Optional: `Retain` or `Delete` (default):
+    ## Optional: `Retain` or `Delete` (default):
     reclaimPolicy: Delete
+    # Do you want this storage class to be included in the Helm test?
+    test: true
     ## Optional: `WaitForFirstConsumer` or `Immediate` (default):
     #volumeBindingMode: Immediate
   iscsi-retain:
     reclaimPolicy: Retain
   smb-delete:
-    disabled: true
-    mountOptions: # SMB only
+    mountOptions:
       - mfsymlinks
     parameters:
       protocol: smb
     reclaimPolicy: Delete
+    test: true
   smb-retain:
-    disabled: true
-    mountOptions: # SMB only
+    mountOptions:
       - mfsymlinks
     parameters:
       protocol: smb
     reclaimPolicy: Retain
+test:
+  affinity: { }
+  nodeSelector: { }
+  tolerations: [ ]
 volumeSnapshotClasses:
   delete:
     ## One of true or false (default):

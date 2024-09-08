@@ -1,32 +1,6 @@
 {{- range $name, $_ := $.Values.storageClasses }}
-{{- if not .disabled }}
-{{- $isSMB := dig "parameters" "protocol" "iscsi" . | eq "smb" }}
-
-{{- if $isSMB }}
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  annotations:
-    helm.sh/hook: test
-    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
-  labels:
-    app: test
-    {{- include "synology-csi.labels" $ | nindent 4 }}
-  name: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
-spec:
-  accessModes:
-    - ReadWriteMany
-  capacity:
-    storage: 10Gi
-  csi:
-    volumeAttributes:
-      protocol: smb
-      source: //{{ (index $.Values.clientInfoSecret.clients 0).host }}/{{ include "synology-csi.fullname" $ }}-{{ $name }}-test
-  mountOptions:
-    - mfsymlinks
-  storageClassName: {{ include "synology-csi.fullname" $ }}-{{ $name }}
-{{- end }}
+{{- if and .test (not .disabled) }}
+{{- with $.Values.test }}
 
 ---
 apiVersion: v1
@@ -34,22 +8,17 @@ kind: PersistentVolumeClaim
 metadata:
   annotations:
     helm.sh/hook: test
-    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
   labels:
     app: test
     {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
 spec:
   accessModes:
-    - {{ ternary "ReadWriteMany" "ReadWriteOnce" $isSMB }}
+    - {{ dig "parameters" "protocol" "iscsi" . | eq "smb" | ternary "ReadWriteMany" "ReadWriteOnce" }}
   resources:
     requests:
-      storage: 10Gi
-  {{- if $isSMB }}
-  volumeName: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
-  {{- else }}
+      storage: 5Gi
   storageClassName: {{ include "synology-csi.fullname" $ }}-{{ $name }}
-  {{- end }}
 
 ---
 apiVersion: v1
@@ -57,24 +26,32 @@ kind: Pod
 metadata:
   annotations:
     helm.sh/hook: test
-    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+    helm.sh/hook-weight: "1"
   labels:
     app: test
     {{- include "synology-csi.labels" $ | nindent 4 }}
   name: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
 spec:
+  {{- with .affinity }}
+  affinity: {{- toYaml . | nindent 8 }}
+  {{- end }}
   containers:
-    - command: [ "/bin/sh", "-c", "while true; do sleep 86400; done" ]
-      image: christianschlichtherle/fio:3.33
-      name: readwrite
+    - image: christianschlichtherle/fio
+      name: test
       volumeMounts:
-        - mountPath: /data
-          name: data
-      workingDir: /data
+        - mountPath: /tmp
+          name: test
+  {{- with .nodeSelector }}
+  nodeSelector: {{- toYaml . | nindent 8 }}
+  {{- end }}
   restartPolicy: Never
+  {{- with .tolerations }}
+  tolerations: {{- toYaml . | nindent 8 }}
+  {{- end }}
   volumes:
-    - name: data
+    - name: test
       persistentVolumeClaim:
         claimName: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
+{{- end }}
 {{- end }}
 {{- end }}

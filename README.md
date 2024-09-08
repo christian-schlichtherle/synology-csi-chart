@@ -92,16 +92,16 @@ However, for convenience it's recommended to use the provided `Makefile` and run
 
 ### Testing the Chart
 
-The Synology CSI Driver is now ready to use.
-You can monitor the SAN Manager application on your Synology Diskstation while running the following tests.
+The Synology CSI Driver is now ready for testing.
 
 #### Automated Testing
 
     $ make test
 
-This will create a `PersistentVolumeClaim` (PVC) and a `Job` to mount the associated `PersistentVolume` (PV) and write a
-file to its filesystem.
-If this succeeds, all resources get automatically removed.
+For each storage class which has the `test` property set to `true`, this will create a `PersistentVolumeClaim` (PVC) and
+a pod which mounts the associated `PersistentVolume` (PV).
+The pod will run a performance test for about a minute using fio.
+You can check the logs to read the performance test results.
 
 ### Troubleshooting
 
