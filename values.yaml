@@ -14,7 +14,7 @@ clientInfoSecret:
       port: 5001
       username: <username>
   # Whether to create the secret if the chart gets installed or not; ignored on updates.
-  create: true
+  create: false
   # Defaults to {{ include "synology-csi.fullname" $ }}-client-info if empty or not present:
   name: ""
 # Specifies affinity, nodeSelector and tolerations for the controller StatefulSet
@@ -24,7 +24,7 @@ controller:
   tolerations: [ ]
 fullnameOverride: ""
 images:
-  # https://kubernetes-csi.github.io/docs/external-attacher.html
+  # https://kubernetes-csi.github.io/docs/external-attacher.htmlis
   attacher:
     image: registry.k8s.io/sig-storage/csi-attacher
     pullPolicy: IfNotPresent
@@ -91,7 +91,8 @@ storageClasses:
     #  formatOptions: --no-discard # optional (iSCSI only): mkfs.* options
     #  fsType: ext4                # optional (iSCSI only): `btrfs` or `ext4` (default)
     #  location: /volume1          # optional, defaults to your primary volume
-    #  protocol: iscsi             # optional: `smb` or `iscsi` (default)
+    #  mountPermissions: '0750'    # optional: (NFS only) mounted folder permissions
+    #  protocol: iscsi             # optional: 'nfs', `smb` or `iscsi` (default)
     ## Optional: `Retain` or `Delete` (default):
     reclaimPolicy: Delete
     # Do you want this storage class to be included in the Helm test?
@@ -99,6 +100,15 @@ storageClasses:
     ## Optional: `WaitForFirstConsumer` or `Immediate` (default):
     #volumeBindingMode: Immediate
   iscsi-retain:
+    reclaimPolicy: Retain
+  nfs-delete:
+    parameters:
+      protocol: nfs
+    reclaimPolicy: Delete
+    test: true
+  nfs-retain:
+    parameters:
+      protocol: nfs
     reclaimPolicy: Retain
   smb-delete:
     mountOptions:
