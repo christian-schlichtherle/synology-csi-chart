@@ -102,11 +102,15 @@ storageClasses:
   iscsi-retain:
     reclaimPolicy: Retain
   nfs-delete:
+    mountOptions:
+      - vers=4.1
     parameters:
       protocol: nfs
     reclaimPolicy: Delete
     test: true
   nfs-retain:
+    mountOptions:
+      - vers=4.1
     parameters:
       protocol: nfs
     reclaimPolicy: Retain
