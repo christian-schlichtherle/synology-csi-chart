@@ -3,17 +3,18 @@
 ---
 jobs:
   release:
+    env:
+      GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+      GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4 # https://github.com/actions/checkout
       - uses: azure/setup-helm@v4 # https://github.com/azure/setup-helm
       - name: Package and index Helm chart
-        run: |
-          set -o errexit -o nounset -o pipefail
-          helm package . --destination dist
-          curl --fail --output-dir dist --remote-name --silent https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/index.yaml
-          helm repo index dist --merge dist/index.yaml --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
-      - uses: peaceiris/actions-gh-pages@v3 # https://github.com/peaceiris/actions-gh-pages
+        run: make dist
+      - uses: peaceiris/actions-gh-pages@v4 # https://github.com/peaceiris/actions-gh-pages
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           keep_files: true
