@@ -16,6 +16,7 @@ REPO_URL ?= https://$(GITHUB_REPOSITORY_OWNER).github.io/$(GITHUB_REPOSITORY_NAM
 .PHONY: diff
 diff: .values.yaml
 	helm diff upgrade $(HELM_RELEASE) . \
+		--context 3 \
 		--namespace $(HELM_NAMESPACE) \
 		--values .values.yaml \
 		$(HELM_OPTS)
