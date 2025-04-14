@@ -39,7 +39,6 @@ test: .values.yaml
 	helm test $(HELM_RELEASE) \
 		--namespace $(HELM_NAMESPACE) \
 		--timeout 10m \
-		--values .values.yaml \
 		$(HELM_OPTS)
 
 .PHONY: uninstall down
