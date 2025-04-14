@@ -1,3 +1,4 @@
+{{- $talosEnabled := (default false .Values.talos) -}}
 {{- with $.Values }}
 ---
 apiVersion: v1
@@ -67,6 +68,9 @@ spec:
       {{- with .affinity }}
       affinity: {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{ if $talosEnabled }}
+      hostPID: true
+      {{- end }}
       containers:
         - name: csi-driver-registrar
           args:
@@ -126,6 +130,11 @@ spec:
               mountPropagation: Bidirectional
             - name: plugin-dir
               mountPath: /csi
+            {{- if $talosEnabled }}
+            - name: chroot-script
+              mountPath: /csibin/chroot.sh
+              subPath: chroot.sh
+            {{- end }}
       hostNetwork: true
       {{- with .nodeSelector }}
       nodeSelector: {{- toYaml . | nindent 8 }}
@@ -152,5 +161,14 @@ spec:
           hostPath:
             path: {{ .kubeletPath }}/plugins/csi.san.synology.com
             type: DirectoryOrCreate
+        {{- if $talosEnabled }}
+        - name: chroot-script
+          configMap:
+            name: {{ include "synology-csi.fullname" $ }}-chroot-configmap
+            defaultMode: 0777
+            items:
+              - key: chroot.sh
+                path: chroot.sh
+        {{- end }}
 {{- end }}
 {{- end }}
