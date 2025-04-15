@@ -15,4 +15,4 @@
 .project
 .svn/
 .vscode/
-/.values.yaml
+/custom.yaml
