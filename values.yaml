@@ -62,6 +62,8 @@ node:
   # If your kubelet path is not standard, specify it here :
   # example for miocrok8s distrib : /var/snap/microk8s/common/var/lib/kubelet
   kubeletPath: /var/lib/kubelet
+  # example for most linux distributions
+  iscsiadmPath: /usr/sbin/iscsiadm
   nodeSelector: { }
   tolerations: [ ]
 # This secret holds the credentials for the SMB user - this is not used for iSCSI volumes:
