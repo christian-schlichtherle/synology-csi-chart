@@ -1,25 +1,6 @@
 {{- range $name, $_ := $.Values.storageClasses }}
 {{- if and .test (not .disabled) }}
 {{- with $.Values.test }}
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
-    helm.sh/hook: test
-  labels:
-    app: test
-    {{- include "synology-csi.labels" $ | nindent 4 }}
-  name: {{ include "synology-csi.fullname" $ }}-{{ $name }}-test
-spec:
-  accessModes:
-    - {{ dig "parameters" "protocol" "iscsi" . | eq "smb" | ternary "ReadWriteMany" "ReadWriteOnce" }}
-  resources:
-    requests:
-      storage: 5Gi
-  storageClassName: {{ include "synology-csi.fullname" $ }}-{{ $name }}
-
 ---
 apiVersion: v1
 kind: Pod
