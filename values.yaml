@@ -59,11 +59,16 @@ nameOverride: ""
 # Specifies affinity, nodeSelector and tolerations for the node DaemonSet
 node:
   affinity: { }
+  # example for most linux distributions
+  iscsiadmPath: /usr/sbin/iscsiadm
   # If your kubelet path is not standard, specify it here :
   # example for miocrok8s distrib : /var/snap/microk8s/common/var/lib/kubelet
   kubeletPath: /var/lib/kubelet
-  # example for most linux distributions
-  iscsiadmPath: /usr/sbin/iscsiadm
+  plugin:
+    # Extra arguments to pass to the csi-plugin container (e.g., for Talos Linux compatibility)
+    extraArgs: []
+    # Example for Talos Linux:
+    # extraArgs: [ "--chroot-dir=/host", "--iscsiadm-path=/usr/local/sbin/iscsiadm" ]
   nodeSelector: { }
   tolerations: [ ]
 # This secret holds the credentials for the SMB user - this is not used for iSCSI volumes:

@@ -96,12 +96,15 @@ spec:
               mountPath: /csi
         - name: csi-plugin
           args:
+            - --chroot-dir=/host
             - --client-info=/etc/synology/client-info.yaml
             - --endpoint=$(CSI_ENDPOINT)
+            - --iscsiadm-path={{ .iscsiadmPath }}
             - --log-level=info
             - --nodeid=$(KUBE_NODE_NAME)
-            - --chroot-dir=/host
-            - --iscsiadm-path={{ .iscsiadmPath }}
+            {{- range .plugin.extraArgs }}
+            - {{ . }}
+            {{- end }}
           env:
             - name: CSI_ENDPOINT
               value: unix:///csi/csi.sock
