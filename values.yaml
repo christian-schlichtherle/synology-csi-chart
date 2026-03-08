@@ -55,6 +55,9 @@ images:
     pullPolicy: IfNotPresent
     tag: v7.0.2
 installCSIDriver: true
+# If using Talos.dev set to true to 
+# create a ConfigMap with a chroot script override and set hostPID to true for the node DaemonSet
+talos: false
 nameOverride: ""
 # Specifies affinity, nodeSelector and tolerations for the node DaemonSet
 node:
