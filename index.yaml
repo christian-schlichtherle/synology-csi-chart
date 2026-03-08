@@ -2,6 +2,26 @@ apiVersion: v1
 entries:
   synology-csi:
   - apiVersion: v2
+    appVersion: v1.2.1
+    created: "2026-03-08T12:43:08.576298868Z"
+    description: A Helm chart for the Synology CSI Driver
+    digest: c055aaa7a8054d67086d9d850ba054edd62dc072a77dd05f82265efd61b057ce
+    home: https://github.com/christian-schlichtherle/synology-csi-chart
+    keywords:
+    - Synology
+    - CSI Driver
+    kubeVersion: '>= 1.20.0'
+    maintainers:
+    - name: Christian Schlichtherle
+      url: https://github.com/christian-schlichtherle
+    name: synology-csi
+    sources:
+    - https://github.com/christian-schlichtherle/synology-csi-chart/tree/main
+    - https://github.com/SynologyOpenSource/synology-csi/tree/main
+    urls:
+    - https://christian-schlichtherle.github.io/synology-csi-chart/synology-csi-0.11.0.tgz
+    version: 0.11.0
+  - apiVersion: v2
     appVersion: v1.2.0
     created: "2024-09-09T23:49:11.533211697Z"
     description: A Helm chart for the Synology CSI Driver
@@ -361,4 +381,4 @@ entries:
     urls:
     - synology-csi-0.6.3.tgz
     version: 0.6.3
-generated: "2024-09-09T23:49:11.532151998Z"
+generated: "2026-03-08T12:43:08.575282344Z"
