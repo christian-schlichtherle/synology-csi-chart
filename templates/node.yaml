@@ -99,7 +99,6 @@ spec:
             - --chroot-dir=/host
             - --client-info=/etc/synology/client-info.yaml
             - --endpoint=$(CSI_ENDPOINT)
-            - --iscsiadm-path={{ .iscsiadmPath }}
             - --log-level=info
             - --nodeid=$(KUBE_NODE_NAME)
             {{- range .plugin.extraArgs }}
