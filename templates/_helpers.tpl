@@ -40,6 +40,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 {{ include "synology-csi.selectorLabels" . }}
 helm.sh/chart: {{ include "synology-csi.chart" . }}
+helm.sh/template: {{ .Template.Name | trimPrefix .Template.BasePath | trimPrefix "/" | replace "/" "_" }}
 {{- end }}
 
 {{/*
@@ -48,7 +49,6 @@ Selector Labels:
 {{- define "synology-csi.selectorLabels" -}}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/name: {{ include "synology-csi.name" . }}
-helm.sh/template: {{ .Template.Name | trimPrefix .Template.BasePath | trimPrefix "/" | replace "/" "_" }}
 {{- end }}
 
 {{/*
