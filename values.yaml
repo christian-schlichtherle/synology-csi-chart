@@ -97,7 +97,7 @@ storageClasses:
     #  fsType: ext4                # optional (iSCSI only): `btrfs` or `ext4` (default)
     #  location: /volume1          # optional, defaults to your primary volume
     #  mountPermissions: '0750'    # optional: (NFS only) mounted folder permissions
-    #  protocol: iscsi             # optional: 'nfs', `smb` or `iscsi` (default)
+    #  protocol: iscsi             # optional: `nfs`, `smb`, `nvme` (PAS7700, requires driver v1.3.0+) or `iscsi` (default)
     ## Optional: `Retain` or `Delete` (default):
     reclaimPolicy: Delete
     # Do you want this storage class to be included in the Helm test?
@@ -132,6 +132,15 @@ storageClasses:
     parameters:
       protocol: smb
     reclaimPolicy: Retain
+  # NVMe/TCP — only supported on PAS7700 with driver v1.3.0+
+  #nvme-delete:
+  #  parameters:
+  #    protocol: nvme
+  #  reclaimPolicy: Delete
+  #nvme-retain:
+  #  parameters:
+  #    protocol: nvme
+  #  reclaimPolicy: Retain
 test:
   affinity: { }
   nodeSelector: { }
