@@ -13,6 +13,21 @@ clientInfoSecret:
       password: <password>
       port: 5001
       username: <username>
+      ## The following TLS options require driver v1.3.1+ and only apply if `https: true`.
+      ## Since v1.3.1 the driver verifies the DSM certificate - earlier versions never did!
+      ## Optional: PEM-encoded CA certificate for verifying the DSM endpoint, required if DSM uses a
+      ## self-signed certificate. The system CA pool is always included, so certificates signed by a
+      ## public CA (e.g. Let's Encrypt) need not be configured here.
+      #tlsCACert: |
+      #  -----BEGIN CERTIFICATE-----
+      #  ...
+      #  -----END CERTIFICATE-----
+      ## Optional: the server name to verify the certificate against, required if `host` is an IP
+      ## address but the certificate only has DNS names (the default for DSM self-signed certificates):
+      #tlsServerName: synology
+      ## Optional: `true` disables certificate verification entirely - not recommended, use `tlsCACert`
+      ## instead. The driver logs a warning on every connection if enabled.
+      #insecureSkipVerify: false
   # Whether to create the secret if the chart gets installed or not; ignored on updates.
   create: false
   # Defaults to {{ include "synology-csi.fullname" $ }}-client-info if empty or not present:

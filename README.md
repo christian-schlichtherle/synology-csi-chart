@@ -12,7 +12,8 @@ issues and to benefit from the advanced resource management features available w
 + Customizable images, image pull policies and image tags for all CSI containers.
 + Customizable parameters for `StorageClass` and `VolumeSnapshotClass` resources.
 + Customizable `affinity`, `nodeSelector` and `tolerations` properties for the `StatefulSet` and `DaemonSet` workloads.
-+ Automatic installation of two storage classes with `reclaimPolicy=Delete` and `reclaimPolicy=Retain`.
++ Automatic installation of storage classes for the iSCSI, NFS and SMB protocols, each with `reclaimPolicy=Delete` and
+  `reclaimPolicy=Retain` - plus commented examples for NVMe/TCP, which requires a PAS7700 and driver v1.3.0 or later.
 + Automatic installation of a CSI Snapshotter if the `VolumeSnapshotClass` CRD is installed in your cluster.
 
 ## Prerequisites
@@ -76,6 +77,41 @@ It's a good practice to create a dedicated user for accessing the Diskstation Ma
 Your user needs to be a member of the `administrators` group and have permission to access the `DSM` application.
 You can safely reject all other permissions.
 
+### Verifying the TLS Certificate of the Diskstation
+
+> [!IMPORTANT]
+> Driver version v1.3.1 changed the HTTPS behavior:
+> up to v1.3.0 the driver silently skipped certificate verification, whereas since v1.3.1 it verifies the certificate of
+> the Diskstation.
+> If you use `https: true` with a self-signed DSM certificate, then you have to configure one of the options below -
+> otherwise the driver can no longer log in to DSM.
+
+Each entry of `clientInfoSecret.clients` accepts these optional keys if `https: true` (driver v1.3.1 or later):
+
+| Key                  | Description                                                                                                                                                                   |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `tlsCACert`          | PEM-encoded CA certificate for verifying the DSM endpoint. The system CA pool is always included, so certificates signed by a public CA (e.g. Let's Encrypt) can be left out.  |
+| `tlsServerName`      | The server name to verify the certificate against. Required if `host` is an IP address but the certificate only has DNS names - the default for DSM self-signed certificates.  |
+| `insecureSkipVerify` | Set to `true` to disable certificate verification entirely. Not recommended - use `tlsCACert` instead. The driver logs a warning on every connection if enabled.               |
+
+For a Diskstation with a self-signed certificate which is accessed by IP address, a typical configuration looks like
+this:
+
+```yaml
+clientInfoSecret:
+  clients:
+    - host: 192.168.1.1
+      https: true
+      password: changeme
+      port: 5001
+      username: changeme
+      tlsCACert: |
+        -----BEGIN CERTIFICATE-----
+        ...
+        -----END CERTIFICATE-----
+      tlsServerName: synology # the host name in the certificate's CN or SAN field
+```
+
 ## Local Development
 
 ### Installing the Chart from Source
@@ -89,6 +125,9 @@ However, for convenience it's recommended to use the provided `Makefile` and run
 ... or just:
 
     $ make
+
+The `diff`, `template` and `up`/`upgrade` targets pass `--values .values.yaml`, so create that file with your local
+overrides first - otherwise `make` fails with `open .values.yaml: no such file or directory`.
 
 ### Testing the Chart
 
@@ -120,12 +159,12 @@ $ NAMESPACE=synology-csi
 Now let's look at the pod for the test job:
 
 ```
-$ kubectl describe pods -n $NAMESPACE -l helm.sh/template=test.yaml
+$ kubectl describe pods -n $NAMESPACE -l helm.sh/template=test_pod.yaml
 [...]
 Volumes:
-  data:
+  test:
     Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  synology-csi-test
+    ClaimName:  synology-csi-iscsi-delete-test
     ReadOnly:   false
 [...]
 Events:
@@ -139,22 +178,22 @@ The test PVC isn't bound.
 Let's examine why:
 
 ```
-$ kubectl describe pvc -n $NAMESPACE -l helm.sh/template=test.yaml
+$ kubectl describe pvc -n $NAMESPACE -l helm.sh/template=test_persistentvolumeclaim.yaml
 [...]
 Events:
   Type     Reason                Age                     From                                                                  Message
   ----     ------                ----                    ----                                                                  -------
-  Normal   Provisioning          4m2s (x9 over 8m17s)    csi.san.synology.com_kolossus-3_c3a0b188-fa91-409b-a4d1-0316d5ffbbd6  External provisioner is provisioning volume for claim "synology-csi/synology-csi-test"
-  Warning  ProvisioningFailed    4m2s (x9 over 8m17s)    csi.san.synology.com_kolossus-3_c3a0b188-fa91-409b-a4d1-0316d5ffbbd6  failed to provision volume with StorageClass "synology-csi-delete": rpc error: code = Internal desc = Couldn't find any host available to create Volume
+  Normal   Provisioning          4m2s (x9 over 8m17s)    csi.san.synology.com_kolossus-3_c3a0b188-fa91-409b-a4d1-0316d5ffbbd6  External provisioner is provisioning volume for claim "synology-csi/synology-csi-iscsi-delete-test"
+  Warning  ProvisioningFailed    4m2s (x9 over 8m17s)    csi.san.synology.com_kolossus-3_c3a0b188-fa91-409b-a4d1-0316d5ffbbd6  failed to provision volume with StorageClass "synology-csi-iscsi-delete": rpc error: code = Internal desc = Couldn't find any host available to create Volume
   Normal   ExternalProvisioning  2m25s (x26 over 8m17s)  persistentvolume-controller                                           waiting for a volume to be created, either by external provisioner "csi.san.synology.com" or manually created by system administrator
 ```
 
-The events mention a provisioner which is running in a container named `plugin` in a controller pod which has been
+The events mention a provisioner which is running in a container named `csi-plugin` in a controller pod which has been
 deployed as part of this chart.
 Let's examine the logs of this plugin container:
 
 ```
-$ kubectl logs -n $NAMESPACE -l helm.sh/template=controller.yaml -c csi-plugin
+$ kubectl logs -n $NAMESPACE -l helm.sh/template=controller_statefulset.yaml -c csi-plugin
 [...]
 2022-01-25T08:19:57Z [INFO] [driver/utils.go:104] GRPC call: /csi.v1.Controller/CreateVolume
 2022-01-25T08:19:57Z [INFO] [driver/utils.go:105] GRPC request: {"capacity_range":{"required_bytes":1073741824},"name":"pvc-a3d7962b-0ab5-4184-b545-a44cc424aaf1","parameters":{"fsType":"ext4"},"volume_capabilities":[{"AccessType":{"Mount":{"fs_type":"ext4"}},"access_mode":{"mode":1}}]}
