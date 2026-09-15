@@ -27,7 +27,7 @@ All make targets use `NAMESPACE=synology-csi` and `RELEASE=$(NAMESPACE)` by defa
 Each component has its own directory under `templates/` holding its workload plus `serviceaccount.yaml`, `clusterrole.yaml` and `clusterrolebinding.yaml`:
 
 - **controller** (`templates/controller/statefulset.yaml`): StatefulSet running csi-provisioner, csi-attacher, csi-resizer, and the Synology csi-plugin. Handles volume create/delete/attach/resize.
-- **node** (`templates/node/daemonset.yaml`): DaemonSet running csi-node-driver-registrar and csi-plugin with host mounts. Handles volume mount/unmount on each node. Supports configurable `kubeletPath` and `plugin.extraArgs` (e.g., for Talos Linux `--iscsiadm-path`).
+- **node** (`templates/node/daemonset.yaml`): DaemonSet running csi-node-driver-registrar and csi-plugin with host mounts. Handles volume mount/unmount on each node. Supports configurable `kubeletPath` and `plugin.extraArgs` (e.g., for Talos Linux `--iscsiadm-path`). The csi-plugin container sets `runAsUser: 0` because the v1.4.0+ image declares `USER 1000` — `privileged: true` alone does not change the runtime user, and the node plugin needs root for mount/format and the host chroot.
 - **snapshotter** (`templates/snapshotter/statefulset.yaml`): StatefulSet running csi-snapshotter and csi-plugin. Only deployed when the `VolumeSnapshotClass` CRD exists in the cluster (`$.Capabilities.APIVersions.Has` guard).
 
 ### Resources
@@ -53,4 +53,6 @@ Pushing a semver tag (`v*.*.*`) triggers `.github/workflows/release.yaml`, which
 - Templates use `{{- with $.Values }}` at the top level, then scope into sub-sections
 - The common labels (not the selector labels) include `helm.sh/template`, derived from the template path, for identifying resources by source template — e.g. `helm.sh/template=controller_statefulset.yaml`
 - All workloads run with `hostNetwork: true` and privileged security contexts (CSI driver requirement)
+- The csi-provisioner, csi-resizer and csi-snapshotter sidecars pass an explicit `--timeout=120s` (upstream default since driver v1.4.0)
+- Storage class `fsType` accepts `ext4` (default) and `xfs`; `btrfs` was dropped in driver v1.4.0 when the image moved to Red Hat UBI 9 (no `btrfs-progs`). DSM-side Btrfs volumes and LUNs are unaffected.
 - The `fio/` directory contains the Dockerfile and config for the test benchmark image (`christianschlichtherle/fio`)

@@ -28,7 +28,7 @@ spec:
           args:
             - --csi-address=$(ADDRESS)
             - --extra-create-metadata
-            - --timeout=60s
+            - --timeout=120s
             - --v=5
           env:
             - name: ADDRESS
@@ -67,6 +67,7 @@ spec:
         - name: csi-resizer
           args:
             - --csi-address=$(ADDRESS)
+            - --timeout=120s
             - --v=5
           env:
             - name: ADDRESS

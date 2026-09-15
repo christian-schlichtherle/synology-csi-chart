@@ -72,6 +72,11 @@ spec:
           {{- end }}
           securityContext:
             privileged: true
+            # Since v1.4.0 the driver image declares `USER 1000` to satisfy the Red Hat container
+            # certification's RunAsNonRoot check. The node plugin genuinely needs root for
+            # mount/format and for the chroot into the host, and `privileged: true` alone does not
+            # change the runtime user, so override it here.
+            runAsUser: 0
           volumeMounts:
             - name: client-info
               mountPath: /etc/synology

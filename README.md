@@ -112,6 +112,29 @@ clientInfoSecret:
       tlsServerName: synology # the host name in the certificate's CN or SAN field
 ```
 
+### Choosing the File System for iSCSI Volumes
+
+> [!WARNING]
+> Driver version v1.4.0 dropped support for `fsType: btrfs`:
+> the driver image is now based on Red Hat UBI 9, which does not ship `btrfs-progs`, so the driver can no longer run
+> `mkfs.btrfs` inside the container.
+> If you have iSCSI `PersistentVolume`s which were formatted as Btrfs, then migrate them to `ext4` or `xfs` before
+> upgrading, or stay on driver v1.3.1 by pinning `images.plugin.tag`.
+
+The `fsType` parameter of a storage class only applies to the iSCSI protocol and accepts `ext4` (the default) or `xfs`.
+This is about the file system *inside* the LUN, not about the volume on the Diskstation:
+Btrfs volumes and thin-provisioned Btrfs LUNs on DSM are unaffected because DSM formats these itself - the storage class
+parameter `enableSpaceReclamation` keeps working as before.
+
+### Running the Driver as a Non-Root User
+
+Since v1.4.0 the driver image declares `USER 1000` in order to satisfy the *RunAsNonRoot* check of the Red Hat container
+certification.
+The controller and snapshotter workloads run as this user, whereas the node `DaemonSet` overrides it with
+`securityContext.runAsUser: 0`, because mounting, formatting and the `chroot` into the host all require root -
+`privileged: true` alone does not change the user a container runs as.
+This chart configures all of that for you; it's only relevant if you write your own manifests.
+
 ## Local Development
 
 ### Installing the Chart from Source

@@ -109,7 +109,8 @@ storageClasses:
     #parameters:
     #  dsm: 192.168.1.1            # optional: needs to be present in the client-info secret
     #  formatOptions: --no-discard # optional (iSCSI only): mkfs.* options
-    #  fsType: ext4                # optional (iSCSI only): `btrfs` or `ext4` (default)
+    #  fsType: ext4                # optional (iSCSI only): `ext4` (default) or `xfs` - `btrfs` is no
+    #                              # longer supported since driver v1.4.0, see the README
     #  location: /volume1          # optional, defaults to your primary volume
     #  mountPermissions: '0750'    # optional: (NFS only) mounted folder permissions
     #  protocol: iscsi             # optional: `nfs`, `smb`, `nvme` (PAS7700, requires driver v1.3.0+) or `iscsi` (default)
