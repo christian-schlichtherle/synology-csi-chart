@@ -85,6 +85,7 @@ spec:
               mountPath: /dev
             - name: host-root
               mountPath: /host
+              mountPropagation: HostToContainer
             - name: kubelet-dir
               mountPath: {{ .kubeletPath }}
               mountPropagation: Bidirectional
